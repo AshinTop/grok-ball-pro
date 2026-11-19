@@ -27,8 +27,8 @@ window.GROK_BODIES = Object.freeze([
   { id: 'sunshine', name: '奶油黄球', en: 'Butter Yellow', swatch: '#ffdb56', color: '#ffdb56', eyes: '#dd7092', soft: true },
   { id: 'jade', name: '青叶绿球', en: 'Leaf Green', swatch: '#14c865', color: '#14c865', eyes: '#e8753b', soft: true },
   { id: 'backbeat', name: '晴空蓝球', en: 'Sky Blue', swatch: '#37c9e4', color: '#37c9e4', eyes: '#225469', soft: true },
-  { id: 'night-seed', name: '钴蓝夜种', en: 'Cobalt Night Seed', swatch: '#536ccd', color: '#536ccd', eyes: '#1988ab', soft: true },
-  { id: 'sprout', name: '橘子芽芽', en: 'Tangerine Sprout', swatch: '#f19947', color: '#f19947', eyes: '#296a9c', soft: true }
+  { id: 'night-seed', name: '钴蓝夜种', en: 'Cobalt Night Seed', swatch: '#4b5eb1', color: '#4b5eb1', eyes: '#2d639c', soft: true },
+  { id: 'sprout', name: '橙色卜卜', en: 'Orange Bubu', swatch: '#ef751c', color: '#ef751c', eyes: '#296a9c', soft: true }
 ].map(Object.freeze));
 
 /* 星星眼、爱心眼仍使用每侧 48 点，兼容原引擎逐点过渡。 */
@@ -876,6 +876,8 @@ window.EMOTION_SEED = [
       rest: 'M-9 2 Q0 7 8 2',
       joy: 'M-21 -4 Q-3 10 21 -4 Q12 16 1 17 Q-10 17 -21 -4 Z',
       gasp: 'M0 -12 C11 -12 11 11 0 11 C-12 11 -12 -12 0 -12 Z',
+      stubborn: 'M-27 -3 C-24 6 -18 7 -11 3 C-4 -1 2 2 7 5 C15 9 23 4 27 -3',
+      bubu: 'M-43 -28 C-42 -17 -32 -14 -20 -15 C-7 -16 6 -15 17 -10 C31 -4 38 20 35 38 C32 55 21 63 8 62 C-14 62 -30 48 -32 24 C-34 11 -29 -5 -21 -15 C-30 -15 -39 -18 -43 -28 Z',
       cheer: 'M-24 -8 Q-2 5 24 -9 C22 18 12 25 0 25 C-15 25 -24 10 -24 -8 Z'
     };
     // Neutral silhouettes and faces differ by toy; the expression state remains the same.
@@ -885,8 +887,8 @@ window.EMOTION_SEED = [
       sunshine: { dx:26, y:106, sx:.86, sy:.79, iris:'#da759a', dark:'#95385e', mouth:'grin', my:147, mx:1, ms:1.0, sleepy:true },
       jade: { dx:13.3, y:108, sx:.53, sy:.45, iris:'#e27d3b', dark:'#aa472c', mouth:'saw', my:141, mx:-1, ms:1.13 },
       backbeat: { dx:24, y:106, sx:.56, sy:.55, iris:'#225e77', dark:'#142c39', mouth:'tiny', my:149, mx:2, ms:.75 },
-      'night-seed': { dx:23, y:111, sx:.84, sy:1.0, iris:'#238aad', dark:'#21486d', mouth:'wave', my:150, mx:-1, ms:.77, brow:'focus' },
-      sprout: { dx:25, y:108, sx:.95, sy:1.05, iris:'#386eab', dark:'#21446d', mouth:'cheer', my:152, mx:-2, ms:.92, star:true }
+      'night-seed': { dx:21, y:127, sx:.78, sy:.90, iris:'#2d639c', dark:'#214784', mouth:'stubborn', my:166, mx:0, ms:1, brow:'stubborn' },
+      sprout: { dx:22, y:101, sx:.82, sy:.89, iris:'#246db3', dark:'#245693', mouth:'stubborn', my:142, mx:0, ms:.88 }
     };
 
     function setBody(id) {
@@ -897,15 +899,24 @@ window.EMOTION_SEED = [
       curBodyColor = null;
       hasSeam = id !== 'classic' && id !== 'midnight';
       svg.setAttribute('data-grok-body', id);
+      var tallTop = id === 'night-seed' || id === 'sprout';
+      svg.setAttribute('viewBox', tallTop ? '-32 -116 293 372' : '-15 -15 259 259');
+      var torso = id === 'night-seed' ? 'translate(0 13) scale(1 .91)'
+        : id === 'sprout' ? 'translate(7 -6) scale(.94 1.04)' : '';
+      [head, felt].forEach(function (layer) {
+        if (torso) layer.setAttribute('transform', torso); else layer.removeAttribute('transform');
+      });
       grad.setAttribute('cx', hasSeam ? '41%' : '38%');
       grad.setAttribute('cy', hasSeam ? '38%' : '32%');
       grad.setAttribute('r', hasSeam ? '66%' : '75%');
       if (hasSeam && !feltNodes) setupFelt();
       if (!hasSeam) return;
       // seams stay toward the edge, without bisecting the embroidered face.
-      trimFront.appendChild(el('path', { d: 'M154 8 Q174 17 182 35',
-        fill: 'none', stroke: '#48264f', 'stroke-width': '1.2', opacity: '.17' }));
-      stitches('M155 9 Q174 18 182 36', '#fff1da', null, '.38');
+      if (!tallTop) {
+        trimFront.appendChild(el('path', { d: 'M154 8 Q174 17 182 35',
+          fill: 'none', stroke: '#48264f', 'stroke-width': '1.2', opacity: '.17' }));
+        stitches('M155 9 Q174 18 182 36', '#fff1da', null, '.38');
+      }
       if (id === 'backbeat') {
         // The two frames roll together and track the same horizontal projection as the face.
         glasses = el('g', {});
@@ -914,17 +925,22 @@ window.EMOTION_SEED = [
           'none', '#f9d74c', 7, glasses);
         stitches('M59 84 L64 118 Q66 125 74 126 L102 129 Q107 128 108 120 L110 92 Q110 86 103 85 L69 80 Q62 79 59 84 M122 92 L125 124 Q126 130 132 130 L165 126 Q170 125 170 119 L169 88 Q168 82 159 82 L129 85 Q123 87 122 92', '#fff2a0', glasses, '.94');
       } else if (id === 'night-seed') {
-        applique('M77 23 C67 14 58 2 62 -8 C65 -17 75 -20 85 -12 C93 -6 99 6 106 11 C105 -7 112 -23 125 -23 C138 -24 146 -17 143 -5 C141 5 133 18 137 25 Z',
-          '#29447d','#24375f',3,trimBack);
-        applique('M68 -5 C71 -12 76 -10 82 -6 M119 -15 Q130 -23 135 -12', 'none','#5373b9',3,trimBack);
-        stitches('M67 -4 Q69 -15 80 -8 M115 -13 Q126 -24 136 -14', '#94abe1', trimBack, '.59');
-        oval(43,147,6,4.2,'#a18ac0',trimFront); oval(185,147,6,4.2,'#a18ac0',trimFront);
+        // Three upright velvet stems, with irregular lobes and narrow stems like the plush.
+        applique('M100 23 C88 11 77 0 77 -15 C70 -25 71 -34 74 -41 C70 -49 74 -60 83 -61 C92 -62 96 -56 96 -46 C104 -42 102 -33 100 -26 C105 -16 100 -7 109 15 Z', '#151b40','#272d58',2,trimBack);
+        applique('M126 21 C137 14 150 1 152 -12 C159 -23 155 -30 157 -38 C163 -51 156 -59 148 -57 C140 -55 138 -47 138 -39 C132 -38 130 -28 132 -21 C124 -14 129 -4 120 16 Z', '#1a214a','#292f5a',2,trimBack);
+        applique('M106 20 C99 7 99 -4 100 -15 C94 -22 98 -33 100 -39 C95 -47 97 -56 102 -62 C103 -69 109 -75 117 -74 C126 -75 132 -68 131 -60 C137 -52 132 -42 130 -37 C134 -29 129 -23 125 -17 C128 -6 121 7 123 20 Z', '#202851','#343a66',2,trimBack);
+        stitches('M82 -54 Q79 -31 98 9 M115 -67 Q106 -43 115 11 M150 -49 Q149 -24 134 5', '#596187', trimBack, '.62');
+        applique('M106 14 Q76 28 69 62 M123 14 Q162 28 174 71', 'none', '#343f98', 1.3);
+        stitches('M106 14 Q76 28 69 62 M123 14 Q162 28 174 71', '#7d86d5', null, '.37');
       } else if (id === 'sprout') {
-        applique('M109 25 C103 16 84 17 70 8 C53 -1 51 -12 63 -17 C72 -21 88 -12 93 -6 C104 6 111 15 114 21 Z', '#468b61', '#357251', 2.4);
-        applique('M110 24 C114 13 118 -2 135 -13 C149 -24 173 -23 178 -15 C182 -6 167 10 154 17 C139 24 125 24 110 27 Z', '#8db953', '#638e46', 2.4);
-        applique('M68 -9 Q89 -4 104 17 M166 -13 Q141 -8 122 17', 'none', '#d1dc86', 2);
-        stitches('M68 -8 Q89 -3 104 18 M165 -12 Q141 -6 123 17', '#e0e7a0');
-        oval(47,147,8.4,4.8,'#e98274',trimFront,{opacity:'.72'}); oval(183,147,8.4,4.8,'#e98274',trimFront,{opacity:'.72'});
+        // Separate upright leaves overlap at their base; soft wavy edges, not flat wings.
+        applique('M106 7 C99 -3 88 -11 82 -21 Q67 -23 67 -35 Q59 -43 65 -54 Q60 -68 71 -73 Q76 -85 89 -78 Q102 -79 102 -62 Q110 -54 104 -45 Q112 -35 106 -25 L114 -1 Z', '#71ac35','#65982b',2,trimBack);
+        applique('M120 6 Q130 -11 134 -25 Q133 -37 144 -44 Q144 -57 156 -60 Q165 -68 175 -59 Q185 -57 183 -45 Q188 -36 179 -29 Q176 -16 165 -16 Q154 -9 137 -3 L130 8 Z', '#76b63b','#689e2e',2,trimBack);
+        applique('M113 5 Q104 -14 109 -27 Q101 -39 108 -52 Q102 -62 108 -71 Q102 -82 112 -88 Q117 -98 129 -94 Q144 -96 148 -84 Q154 -75 145 -65 Q148 -57 141 -49 Q143 -38 133 -31 Q130 -12 126 6 Z', '#97ca47','#80b63a',2,trimBack);
+        applique('M77 -70 Q83 -41 101 -14 M125 -85 Q114 -58 122 -10 M170 -53 Q159 -32 140 -13', 'none', '#547f2a', 2.7, trimBack);
+        stitches('M77 -70 Q83 -41 101 -14 M125 -85 Q114 -58 122 -10 M170 -53 Q159 -32 140 -13', '#c7ea75', trimBack, '.86');
+        applique('M102 1 Q75 14 63 48 M124 0 Q159 15 169 49', 'none', '#b95916', 1.3);
+        stitches('M102 1 Q75 14 63 48 M124 0 Q159 15 169 49', '#f9a54f', null, '.58');
       }
     }
     function setExpression(id) { mouthShape = id; }
@@ -941,6 +957,9 @@ window.EMOTION_SEED = [
       var profile = plushProfiles[bodyId];
       var isIdle = mouthShape === '02';
       var eyelids = [pose.left, pose.right];
+      var cobalt = bodyId === 'night-seed';
+      var bubu = bodyId === 'sprout';
+      var plushVariant = cobalt || bubu;
       var irisColor = profile.iris;
       var yy = Math.sin(yaw);
       var fh = Math.min(1, Math.max(.26, cos));
@@ -950,38 +969,52 @@ window.EMOTION_SEED = [
         var side = k === 0 ? -1 : 1;
         var movement = eyelids[k];
         var openness = clamp(Math.pow(Math.max(.005, movement.open), .6) * def[k], .05, 1.23);
-        var lift = def[4] || (isIdle ? profile.brow : '');
+        var lift = bubu && mouthShape === '22' ? '' : def[4] || (isIdle ? profile.brow : '');
         var bx = HEAD_C + side * profile.dx * fh + yy * 86;
-        var by = profile.y + clamp((movement.y || 0) * .21, -4, 4);
-        var tilt = isIdle && profile.sleepy ? -side * 10 : 0;
+        var by = profile.y - (bubu && /^(22|24)$/.test(mouthShape) ? 15 : 0) + clamp((movement.y || 0) * .21, -4, 4);
+        var tilt = isIdle && profile.sleepy ? -side * 10 : bubu ? (mouthShape === '22' ? 13 : side * 4) : cobalt ? side * 6 : 0;
         eye.group.setAttribute('transform', 'translate(' + r2(bx) + ' ' + r2(by) + ') rotate(' + tilt + ') scale(' + r2(fh * profile.sx) + ' ' + profile.sy + ')');
         var closed = openness < .22;
         var scale = 'scale(1 ' + r2(openness) + ')';
-        var shiftX = clamp(def[2] + (movement.lookX || 0) * .31, -5, 5);
+        var shiftX = clamp(def[2] + (movement.lookX || 0) * .31 + (cobalt && isIdle ? -side * 3 : 0), -5, 5);
         var shiftY = clamp(def[3] + (movement.lookY || 0) * .26, -4, 4);
         var irisShift = scale + ' translate(' + r2(shiftX) + ' ' + r2(shiftY) + ')';
         [eye.white, eye.grain].forEach(function (n) { show(n, !closed); n.setAttribute('transform', scale); });
         [eye.iris, eye.ring, eye.inner, eye.highlight].forEach(function (n) { show(n, !closed); n.setAttribute('transform', irisShift); });
+        eye.white.setAttribute('fill', plushVariant ? '#faf5ee' : '#fff4da');
+        eye.white.setAttribute('stroke', plushVariant ? '#fffbf4' : '#fff9e8');
+        eye.grain.setAttribute('stroke', plushVariant ? '#b7c0db' : '#d1bfa7');
+        eye.iris.setAttribute('rx', cobalt ? 13.8 : bubu ? 15.5 : 13.1);
+        eye.iris.setAttribute('ry', plushVariant ? 22 : 19.3);
+        eye.ring.setAttribute('rx', bubu ? 16 : 14.6);
+        eye.ring.setAttribute('ry', plushVariant ? 23 : 21);
         eye.iris.setAttribute('fill', irisColor);
+        if (plushVariant) { show(eye.inner, false); show(eye.highlight, false); }
         eye.inner.setAttribute('fill', profile.dark);
         if (profile.sleepy && isIdle && !closed) eye.cloth.setAttribute('clip-path', 'url(#' + eye.clip + ')');
         else eye.cloth.removeAttribute('clip-path');
         show(eye.lid, closed);
         eye.lid.setAttribute('d', def[5] === 'wink' ? 'M-16 -1 Q0 9 15 -5' : 'M-14 0 Q0 8 14 0');
         show(eye.brow, !closed && !!lift);
-        if (lift) {
+        eye.brow.setAttribute('stroke', cobalt ? '#121221' : '#392c43');
+        eye.brow.setAttribute('stroke-width', cobalt && lift === 'stubborn' ? '6.3' : '4.1');
+        if (lift === 'stubborn') {
+          var top = -25 * openness;
+          eye.brow.setAttribute('d', 'M' + r2(side*23) + ' ' + r2(top-13) + ' L' + r2(-side*15) + ' ' + r2(top) + ' L' + r2(-side*14) + ' ' + r2(top-7));
+        } else if (lift) {
           var h = -31 * openness;
           var a = lift === 'focus' ? -5 * side : lift === 'sad' ? 8 * side : lift === 'side' ? 4 * side : 0;
           eye.brow.setAttribute('d', 'M-12 ' + r2(h-a) + ' Q0 ' + r2(h-7) + ' 12 ' + r2(h+a));
         }
-        var star = mouthShape === '22' || (isIdle && profile.star);
+        var star = mouthShape === '22';
         var symbol = star || mouthShape === '25';
         show(eye.symbol, symbol && !closed);
         if (symbol) {
-          eye.symbol.setAttribute('d', star
-            ? 'M0 -12 L3 -4 L11 -3 L5 3 L7 11 L0 7 L-7 11 L-5 3 L-11 -3 L-3 -4 Z'
+          eye.symbol.setAttribute('d', star && bubu
+            ? 'M0 -16 Q2 -16 3 -10 L5 -5 L13 -5 Q15 -4 12 -1 L7 3 L9 12 Q9 15 6 13 L0 8 L-7 13 Q-10 14 -9 10 L-7 3 L-13 -2 Q-15 -5 -11 -5 L-5 -6 L-2 -14 Q-1 -16 0 -16 Z'
+            : star ? 'M0 -12 L3 -4 L11 -3 L5 3 L7 11 L0 7 L-7 11 L-5 3 L-11 -3 L-3 -4 Z'
             : 'M0 12 C-1 10 -12 3 -12 -4 C-12 -11 -4 -12 0 -5 C4 -12 12 -11 12 -4 C12 3 1 10 0 12 Z');
-          eye.symbol.setAttribute('fill', star ? '#ffe18d' : '#ffa0af');
+          eye.symbol.setAttribute('fill', star ? (bubu ? '#f3cf48' : '#ffe18d') : '#ffa0af');
           eye.symbol.setAttribute('transform', irisShift);
           show(eye.inner, false); show(eye.highlight, false);
         }
@@ -997,12 +1030,13 @@ window.EMOTION_SEED = [
       var mode = def[5];
       var profile = plushProfiles[bodyId];
       if (mode === 'base' && profile) mode = profile.mouth;
-      var wide = /^(joy|gasp|cheer|grin)$/.test(mode);
-      var color = hasSeam ? (mode === 'grin' ? '#85747a' : '#312535') : pose.left.color;
+      if (bodyId === 'sprout' && /^(22|24)$/.test(mouthShape)) mode = 'bubu';
+      var wide = /^(joy|gasp|cheer|grin|bubu)$/.test(mode);
+      var color = hasSeam ? (mode === 'grin' ? '#85747a' : (bodyId === 'night-seed' || bodyId === 'sprout') ? '#151322' : '#312535') : pose.left.color;
       var d = stitchMouth[mode] || stitchMouth.base;
       var tx = HEAD_C + Math.sin(yaw) * 87 + (profile ? profile.mx : 0);
       var y = profile ? profile.my + (/^(cheer|gasp)$/.test(mode) ? 5 : 0) : 169;
-      var scale = profile && mode === profile.mouth ? profile.ms : 1;
+      var scale = mode === 'bubu' ? 1.05 : profile && mode === profile.mouth ? profile.ms : 1;
       var transform = 'translate(' + r2(tx) + ' ' + y + ') scale(' + r2(Math.cos(yaw)*scale) + ' ' + scale + ')';
       mouth.setAttribute('d', d); mouth.setAttribute('stroke', color);
       mouth.setAttribute('stroke-width', hasSeam ? (wide ? 6.5 : 7.5) : 4.8);
@@ -1010,10 +1044,13 @@ window.EMOTION_SEED = [
       mouth.setAttribute('transform', transform);
       show(mouthThread, hasSeam);
       mouthThread.setAttribute('d', d); mouthThread.setAttribute('transform', transform + ' translate(0 -1.4)');
-      mouthThread.setAttribute('stroke', '#b98284');
+      mouthThread.setAttribute('stroke', bodyId === 'night-seed' || bodyId === 'sprout' ? '#647097' : '#b98284');
       mouthThread.setAttribute('stroke-dasharray', '.6 1.7');
-      show(tongue, hasSeam && mode === 'cheer');
-      tongue.setAttribute('transform', transform + ' translate(0 7)');
+      show(tongue, hasSeam && (mode === 'cheer' || mode === 'bubu'));
+      tongue.setAttribute('d', mode === 'bubu'
+        ? 'M-23 26 C-22 14 -14 10 -7 15 C-3 17 -4 26 -1 25 C6 9 17 13 23 23 C32 37 28 55 17 56 C3 59 -15 49 -21 39 Q-25 32 -23 26 Z'
+        : 'M-10 6 Q-6 0 0 5 Q6 1 10 6 Q7 13 0 13 Q-7 13 -10 6 Z');
+      tongue.setAttribute('transform', mode === 'bubu' ? transform : transform + ' translate(0 7)');
     }
 
     function buildEye(k) {

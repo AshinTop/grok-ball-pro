@@ -106,6 +106,32 @@ for (const code of [source, scripts[0]]) {
   assert.equal(faceBall.emotionId, '24');
   assert.ok(faceHost.querySelectorAll('path').some(p => p.style.display === ''));
   faceBall.destroy();
+
+  // The tall top silhouettes fit without shifting or recoloring the other bodies on switch.
+  const mojoHost = new Element();
+  const mojo = api.create(mojoHost, { body: 'night-seed', emotion: '02', autostart: false });
+  const mojoSvg = mojoHost.children[0];
+  const visiblePaths = () => mojoHost.querySelectorAll('path').filter(path => path.getAttribute('display') !== 'none');
+  assert.equal(mojoSvg.getAttribute('viewBox'), '-32 -116 293 372');
+  assert.equal(visiblePaths().filter(path => path.getAttribute('stroke-width') === '6.3').length, 2);
+  assert.equal(visiblePaths().filter(path => ['#151b40', '#1a214a', '#202851'].includes(path.getAttribute('fill'))).length, 3);
+  mojo.setBody('sprout');
+  const visibleColor = fill => visiblePaths().filter(path => path.getAttribute('fill') === fill).length;
+  assert.equal(visibleColor('#e48b9a'), 0);
+  assert.equal(visibleColor('#f3cf48'), 0);
+  assert.equal(visiblePaths().filter(path => ['#71ac35', '#76b63b', '#97ca47'].includes(path.getAttribute('fill'))).length, 3);
+  mojo.setEmotion('22');
+  assert.equal(visibleColor('#f3cf48'), 2);
+  assert.equal(visibleColor('#e48b9a'), 1);
+  mojo.setEmotion('25');
+  assert.equal(visiblePaths().filter(path => path.getAttribute('fill') === '#ffa0af').length, 2);
+  assert.equal(visiblePaths().filter(path => path.getAttribute('fill') === '#f3cf48').length, 0);
+  mojo.setBody('encore');
+  assert.equal(mojo.emotionId, '25');
+  assert.equal(mojoSvg.getAttribute('viewBox'), '-15 -15 259 259');
+  assert.equal(mojoHost.querySelectorAll('ellipse').filter(n => n.getAttribute('fill') === '#fff4da').length, 2);
+  mojo.destroy();
+
   const host = new Element();
   const ball = api.create(host, { emotion: '02' });
   const firstSvg = host.children[0];

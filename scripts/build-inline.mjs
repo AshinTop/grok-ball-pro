@@ -38,7 +38,7 @@ const inline = [
   minified.trim(),
   '  </script>',
 ].join('\n');
-const output = html.replace(enginePattern, inline);
+const output = html.replace(enginePattern, () => inline);
 
 await writeFile(tempUrl, output, 'utf8');
 await rename(tempUrl, htmlUrl);
