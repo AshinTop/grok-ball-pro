@@ -877,6 +877,7 @@ window.EMOTION_SEED = [
       joy: 'M-21 -4 Q-3 10 21 -4 Q12 16 1 17 Q-10 17 -21 -4 Z',
       gasp: 'M0 -12 C11 -12 11 11 0 11 C-12 11 -12 -12 0 -12 Z',
       stubborn: 'M-27 -3 C-24 6 -18 7 -11 3 C-4 -1 2 2 7 5 C15 9 23 4 27 -3',
+      bubuStar: 'M-42 -21 C-40 -15 -33 -12 -24 -12 C-9 -13 9 -11 20 -5 C32 2 39 17 39 34 C40 52 30 62 13 62 C-4 64 -20 58 -26 44 C-33 30 -31 10 -35 -8 C-40 -10 -44 -14 -45 -19 Q-45 -23 -42 -21 Z',
       bubu: 'M-43 -28 C-42 -17 -32 -14 -20 -15 C-7 -16 6 -15 17 -10 C31 -4 38 20 35 38 C32 55 21 63 8 62 C-14 62 -30 48 -32 24 C-34 11 -29 -5 -21 -15 C-30 -15 -39 -18 -43 -28 Z',
       cheer: 'M-24 -8 Q-2 5 24 -9 C22 18 12 25 0 25 C-15 25 -24 10 -24 -8 Z'
     };
@@ -1030,13 +1031,14 @@ window.EMOTION_SEED = [
       var mode = def[5];
       var profile = plushProfiles[bodyId];
       if (mode === 'base' && profile) mode = profile.mouth;
-      if (bodyId === 'sprout' && /^(22|24)$/.test(mouthShape)) mode = 'bubu';
-      var wide = /^(joy|gasp|cheer|grin|bubu)$/.test(mode);
+      if (bodyId === 'sprout' && mouthShape === '22') mode = 'bubuStar';
+      if (bodyId === 'sprout' && mouthShape === '24') mode = 'bubu';
+      var wide = /^(joy|gasp|cheer|grin|bubu|bubuStar)$/.test(mode);
       var color = hasSeam ? (mode === 'grin' ? '#85747a' : (bodyId === 'night-seed' || bodyId === 'sprout') ? '#151322' : '#312535') : pose.left.color;
       var d = stitchMouth[mode] || stitchMouth.base;
       var tx = HEAD_C + Math.sin(yaw) * 87 + (profile ? profile.mx : 0);
       var y = profile ? profile.my + (/^(cheer|gasp)$/.test(mode) ? 5 : 0) : 169;
-      var scale = mode === 'bubu' ? 1.05 : profile && mode === profile.mouth ? profile.ms : 1;
+      var scale = mode === 'bubuStar' ? .95 : mode === 'bubu' ? 1.05 : profile && mode === profile.mouth ? profile.ms : 1;
       var transform = 'translate(' + r2(tx) + ' ' + y + ') scale(' + r2(Math.cos(yaw)*scale) + ' ' + scale + ')';
       mouth.setAttribute('d', d); mouth.setAttribute('stroke', color);
       mouth.setAttribute('stroke-width', hasSeam ? (wide ? 6.5 : 7.5) : 4.8);
@@ -1046,11 +1048,13 @@ window.EMOTION_SEED = [
       mouthThread.setAttribute('d', d); mouthThread.setAttribute('transform', transform + ' translate(0 -1.4)');
       mouthThread.setAttribute('stroke', bodyId === 'night-seed' || bodyId === 'sprout' ? '#647097' : '#b98284');
       mouthThread.setAttribute('stroke-dasharray', '.6 1.7');
-      show(tongue, hasSeam && (mode === 'cheer' || mode === 'bubu'));
-      tongue.setAttribute('d', mode === 'bubu'
+      show(tongue, hasSeam && (mode === 'cheer' || mode === 'bubu' || mode === 'bubuStar'));
+      tongue.setAttribute('d', mode === 'bubuStar'
+        ? 'M-20 27 C-16 20 -10 16 -5 16 C-2 16 -5 25 -2 25 C2 25 2 15 9 12 C20 6 29 15 32 26 C38 41 34 52 23 55 C8 60 -7 56 -16 48 C-22 43 -24 35 -20 27 Z'
+        : mode === 'bubu'
         ? 'M-23 26 C-22 14 -14 10 -7 15 C-3 17 -4 26 -1 25 C6 9 17 13 23 23 C32 37 28 55 17 56 C3 59 -15 49 -21 39 Q-25 32 -23 26 Z'
         : 'M-10 6 Q-6 0 0 5 Q6 1 10 6 Q7 13 0 13 Q-7 13 -10 6 Z');
-      tongue.setAttribute('transform', mode === 'bubu' ? transform : transform + ' translate(0 7)');
+      tongue.setAttribute('transform', mode === 'bubu' || mode === 'bubuStar' ? transform : transform + ' translate(0 7)');
     }
 
     function buildEye(k) {
