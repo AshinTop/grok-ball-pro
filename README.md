@@ -1,6 +1,6 @@
-# Grok Ball
+# Grok Ball Pro
 
-一个会「看」你的 AI 表情球：圆球 + 一双眼睛实时跟随鼠标，内置 **32 种表情状态**（生命周期 / 情绪反应 / 代理工作状态三组），纯 SVG 驱动、零运行依赖。
+一个会「看」你的 AI 表情球：圆球 + 一双眼睛实时跟随鼠标，内置 **36 种表情状态**（生命周期 / 情绪反应 / 代理工作状态三组），纯 SVG 驱动、零运行依赖。
 
 > 灵感来自 Grok 的 Logo 动态效果，但本项目与 xAI / Grok 无关，代码为原创实现。
 
@@ -9,7 +9,7 @@
 - **单文件成品**：`index.html` 内联压缩后的引擎，一个文件即可运行，无需 npm 或外部资源。
 - **原始眼环几何**：25 组左右各 48 点的轮廓，保留比例、位置与左右不对称细节。
 - **真实球面投影**：基于身体轮廓采样、经度换算和余弦压缩；自旋到背面时眼睛自动隐藏。
-- **32 种表情**：睡眠、待机、好奇、开心、惊讶、生气、思考中、任务完成、检索资料……全部可切换。
+- **原版 32 种表情**：睡眠、待机、好奇、开心、惊讶、生气、思考中、任务完成、检索资料……全部可切换。
 - **完整动画**：逐点眼环形变、眨眼弹簧、注视、呼吸、序列动画、3D 彩带、睡眠 zzz、撒花。
 - **可嵌入业务**：提供 `GrokBall.create()` SDK，可用 `emotionId` 直接对接 AI 输出。
 - **可维护源码**：提供可直接引用的 JS 运行时和带 Agent 消息类型的 TypeScript 入口。
@@ -17,7 +17,7 @@
 
 ## 在线效果预览
 
-在线体验：[https://tycoding.github.io/grok-ball/](https://tycoding.github.io/grok-ball/)
+上游原版在线预览：[https://tycoding.github.io/grok-ball/](https://tycoding.github.io/grok-ball/)
 
 ![Grok Ball 在线配置与预览界面](https://tycoding.github.io/grok-ball/assets/promo/01-overview.png)
 
@@ -114,6 +114,37 @@ node scripts/build-inline.mjs
 | 生命周期 | 00 睡眠 · 01 唤醒 · 02 待机放空 · 03 好奇 · 04 发呆 · 05 加载苏醒 · 06 休眠 · 07 抖动唤醒 |
 | 情绪反应 | 10 开心 · 11 疑惑 · 12 失落 · 13 惊讶 · 14 害羞 · 15 疲惫 · 16 专注 · 17 慌张 · 18 无奈 · 19 满意 · 20 困惑 · 21 生气 |
 | 代理工作状态 | 30 思考中 · 31 接收任务 · 32 处理中忙碌 · 33 任务完成 · 34 出错 · 35 等待输入 · 36 联网加载 · 37 复述回忆 · 38 拒绝/受限 · 39 输出回复 · 40 检索资料 · 41 停止终止 |
+
+## Pro 球体与表情
+
+本 fork 保留原版 32 个表情 ID 与所有既有接口，在其上新增 **6 款可选球体、4 个表情**，共可组合 216 种。经典原版依然跟随表情配色；经典黑球为固定深色。其他四款为原创舞台玩偶风球体：珊瑚安可（斜织带与星形刺绣）、青柠节拍（耳机）、钴蓝夜种（卷毛）、橘子芽芽（双叶）。
+
+在页面中分别点击「球体」和「表情」，两项选择可独立切换，页面刷新后记住上一次搭配。禁用浏览器存储时页面仍可使用。「跟随球体」会使用当前球体的默认色；经典原版仍显示各表情自带颜色。使用「自定义」可覆盖底色，不会移除球体的图案或配件。
+
+| 新表情 ID | 名称 |
+| --- | --- |
+| 22 | 星光眼 |
+| 23 | 俏皮眨眼 |
+| 24 | 哇哦 |
+| 25 | 心动 |
+
+```js
+const ball = GrokBall.create('#mount', { body: 'sprout', emotion: '22' });
+ball.setBody('backbeat'); // 表情不变，不重建实例
+ball.handleAIMessage({ emotionId: '25' }); // 球体不变
+console.log(ball.bodyId, GrokBall.BODIES.map(({ id }) => id));
+```
+
+`body` 是球体主题，和原有的 `shape`（球面的几何轮廓）作用不同。省略 `body` 时沿用原版行为。Pro 新增球体和表情为本 fork 的原创数字图形，不是官方周边。
+
+### 回归检查
+
+```bash
+node --check src/grok-ball.js
+node scripts/build-inline.mjs
+node scripts/test-grok-ball.mjs
+tsc --noEmit --target ES2020 --module ES2020 --moduleResolution bundler --lib ES2020,DOM src/grok-ball.ts
+```
 
 ## 许可证
 

@@ -18,6 +18,44 @@ window.EB_RINGS = {
 };
 
 
+/* 原创球壳：与表情独立；圆球的球面投影不随装饰改变。 */
+window.GROK_BODIES = Object.freeze([
+  { id: 'classic', name: '经典原版', en: 'Classic', swatch: '#f3f0ea' },
+  { id: 'midnight', name: '经典黑球', en: 'Midnight', swatch: '#25242c', color: '#25242c', eyes: '#fff9ed' },
+  { id: 'encore', name: '珊瑚安可', en: 'Coral Encore', swatch: '#df766d', color: '#df766d', eyes: '#371d33', soft: true },
+  { id: 'backbeat', name: '青柠节拍', en: 'Mint Backbeat', swatch: '#7dd0cc', color: '#7dd0cc', eyes: '#173d4b', soft: true },
+  { id: 'night-seed', name: '钴蓝夜种', en: 'Cobalt Night Seed', swatch: '#3e5db4', color: '#3e5db4', eyes: '#fff2d2', soft: true },
+  { id: 'sprout', name: '橘子芽芽', en: 'Tangerine Sprout', swatch: '#f9aa62', color: '#f9aa62', eyes: '#513053', soft: true }
+].map(Object.freeze));
+
+/* 星星眼、爱心眼仍使用每侧 48 点，兼容原引擎逐点过渡。 */
+(function () {
+  var rings = window.EB_RINGS.EXPRESSIONS;
+  function center(ring) {
+    return ring.reduce(function (p, q) { return [p[0] + q[0] / ring.length, p[1] + q[1] / ring.length]; }, [0, 0]);
+  }
+  var centers = rings[0].map(center);
+  function pair(draw) {
+    return centers.map(function (c) {
+      return Array.from({ length: 48 }, function (_, i) {
+        var v = draw(i / 48), y = v[1];
+        return [c[0] + v[0], c[1] + y];
+      });
+    });
+  }
+  rings.push(pair(function (u) {
+    var j = u * 10, k = Math.floor(j), q = j - k;
+    var a = k * Math.PI / 5, b = (k + 1) * Math.PI / 5;
+    var ra = k % 2 ? 10.4 : 22, rb = k % 2 ? 22 : 10.4;
+    return [Math.cos(a) * ra * (1 - q) + Math.cos(b) * rb * q,
+      Math.sin(a) * ra * (1 - q) + Math.sin(b) * rb * q];
+  }), pair(function (u) {
+    var a = Math.PI / 2 - u * Math.PI * 2, sin = Math.sin(a);
+    return [20 * sin * sin * sin, -(13 * Math.cos(a) - 5 * Math.cos(2*a) - 2 * Math.cos(3*a) - Math.cos(4*a)) * 1.30];
+  }));
+})();
+
+
 /* ============================================================
  * emotions.js —— 数据层（纯数据，不含任何 DOM / 逻辑代码）
  *
@@ -342,6 +380,42 @@ window.EMOTION_SEED = [
         { at: 250, body: { color: '#E4574A' } }
       ]
     }
+  },
+
+  {
+    id: '22', name: '星光眼', group: 'emotion',
+    desc: '双眼变成五角星，轻轻跃起，像被舞台星光点亮',
+    en: { name: 'Starry Eyes', desc: 'Five-point star eyes catch the stage light' },
+    transition: 420, pool: [25], poolMs: [8000, 12000], blinkMs: [4000, 6500],
+    body: { y: -2, breathe: 0.018, color: '#f4ead5' },
+    eyes: { both: { y: -3, color: '#bf7029' } },
+    anims: [{ target: 'eyes', prop: 'scale', type: 'pulse', amp: 0.08, period: 1600 }]
+  },
+  {
+    id: '23', name: '俏皮眨眼', group: 'emotion',
+    desc: '单眼眨起，另一只眼偷偷看向一侧',
+    en: { name: 'Cheeky Wink', desc: 'One eye winks while the other steals a sidelong glance' },
+    transition: 350, pool: [11], poolMs: [8000, 12000], blinkMs: null,
+    body: { rotate: -5, breathe: 0.012, color: '#f0e5eb' },
+    eyes: { left: { open: 0.27, lookX: 7 }, right: { open: 1.08, lookX: 7 } },
+    anims: [{ target: 'body', prop: 'rotate', type: 'sine', amp: 2.4, period: 2000 }]
+  },
+  {
+    id: '24', name: '哇哦', group: 'emotion',
+    desc: '睁圆双眼，嘴巴变成 O 形，身体轻轻后仰',
+    en: { name: 'Wow!', desc: 'Wide eyes and an O-shaped mouth' },
+    transition: 350, pool: [21], poolMs: [8000, 12000], blinkMs: [2900, 5200],
+    body: { y: -2, rotate: -3, breathe: 0.015, color: '#f2ede0' },
+    eyes: { both: { y: -4, scaleY: 1.13 } }
+  },
+  {
+    id: '25', name: '心动', group: 'emotion',
+    desc: '两颗爱心跟随目光轻轻跳动',
+    en: { name: 'Heart Eyes', desc: 'Two little hearts pulse and follow the gaze' },
+    transition: 420, pool: [26], poolMs: [8000, 12000], blinkMs: [4300, 7000],
+    body: { y: -1, breathe: 0.012, color: '#f1e8ed' },
+    eyes: { both: { color: '#a23155' } },
+    anims: [{ target: 'eyes', prop: 'scale', type: 'pulse', amp: 0.11, period: 1350 }]
   },
 
   /* ==================== 3）代理工作状态（12 个） ==================== */
@@ -670,7 +744,72 @@ window.EMOTION_SEED = [
 
     var bodyG = el('g', {});
     var head = el('path', { d: ringPath(headRing), fill: 'url(#' + id + 'g)', stroke: 'none', 'stroke-width': '2' });
+    var trimBack = el('g', { 'pointer-events': 'none' });
+    var trimFront = el('g', { 'pointer-events': 'none' });
+    var mouth = el('path', { 'pointer-events': 'none', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '5' });
+    var bodyId = 'classic', mouthShape = '', hasSeam = false;
+    bodyG.appendChild(trimBack);
     bodyG.appendChild(head);
+    bodyG.appendChild(trimFront);
+    bodyG.appendChild(mouth);
+    function stitches(d, color) {
+      trimFront.appendChild(el('path', { d: d, fill: 'none', stroke: color, 'stroke-width': '2.3', 'stroke-dasharray': '2.2 5.4', 'stroke-linecap': 'round', opacity: '0.52' }));
+    }
+    function applique(d, fill, stroke, w, parent) {
+      (parent || trimFront).appendChild(el('path', { d: d, fill: fill, stroke: stroke || 'none', 'stroke-width': w || 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
+    }
+    function dot(x, y, r, fill, parent) {
+      (parent || trimFront).appendChild(el('circle', { cx: x, cy: y, r: r, fill: fill }));
+    }
+    function setBody(id) {
+      if (id === bodyId) return;
+      bodyId = id;
+      trimBack.replaceChildren(); trimFront.replaceChildren();
+      curBodyColor = null;
+      hasSeam = id !== 'classic' && id !== 'midnight';
+      svg.setAttribute('data-grok-body', id);
+      if (hasSeam) stitches('M29 153 Q41 194 88 215 M145 218 Q181 208 196 189', '#fff5e7');
+      if (id === 'encore') {
+        applique('M25 49 Q41 26 83 13 Q134 0 180 23 L189 40 Q145 23 94 35 Q52 42 19 66 Z', '#6d354d', '#5b2b50');
+        stitches('M26 55 Q98 3 180 30', '#f4b4c1');
+        applique('M182 134 L186 144 L197 144 L188 151 L191 161 L182 155 L173 161 L176 151 L167 144 L178 144 Z', '#ffe298');
+      } else if (id === 'backbeat') {
+        applique('M21 112 Q15 23 114 12 Q210 23 207 113', 'none', '#143c56', 18);
+        applique('M21 110 Q23 29 114 17 Q204 29 207 110', 'none', '#8ee6df', 5);
+        applique('M13 99 Q-6 97 -7 118 L-5 143 Q-4 160 17 157 L30 153 L28 103 Z M214 99 Q233 97 234 118 L232 143 Q231 160 210 157 L197 153 L199 103 Z', '#235375', '#2f6986', 3);
+        applique('M13 109 L16 143 M216 109 L213 143', 'none', '#aaf3db', 4);
+        stitches('M202 150 L204 106 M26 150 L23 106', '#cef9ee');
+      } else if (id === 'night-seed') {
+        applique('M72 25 Q57 7 70 -12 Q78 4 93 9 C90 -14 119 -18 133 -10 Q121 -1 132 12 Q146 14 154 28 Z', '#263951', '#364d72', 3, trimBack);
+        applique('M88 20 Q108 6 129 19', 'none', '#90aaf1', 3);
+        dot(37, 136, 6, '#8879bc'); dot(46, 142, 3, '#c5a6db'); dot(188, 136, 6, '#8879bc');
+      } else if (id === 'sprout') {
+        applique('M114 29 C104 17 87 7 72 3 C65 -3 51 -10 43 -10 Q51 13 66 23 Q90 34 114 29 Z', '#3c8462', '#2f624d', 2);
+        applique('M107 24 Q115 2 149 -9 L172 -12 Q159 10 144 21 Q127 28 107 24 Z', '#a1c45e', '#689353', 2);
+        applique('M58 2 Q84 12 101 23 M151 -3 Q130 6 119 18', 'none', '#d9e59a', 2);
+        dot(46, 137, 6, '#e58569'); dot(60, 144, 3, '#fee0aa'); dot(181, 137, 6, '#e58569');
+      }
+    }
+    function setExpression(id) { mouthShape = id; }
+    function renderMouth(pose, yaw, sketch) {
+      if ((!hasSeam && !/^(22|23|24|25)$/.test(mouthShape)) || Math.cos(yaw) <= 0.12 || sketch > 0.5) {
+        mouth.setAttribute('display', 'none');
+        return;
+      }
+      mouth.removeAttribute('display');
+      var o = mouthShape === '24' || mouthShape === '13';
+      var sad = /^(12|15|17|34)$/.test(mouthShape);
+      var sleepy = /^(00|06|41)$/.test(mouthShape);
+      var wide = /^(10|19|22|25|33)$/.test(mouthShape);
+      var color = pose.left.color;
+      mouth.setAttribute('d', o ? 'M0 -10 C12 -10 12 11 0 11 C-12 11 -12 -10 0 -10 Z' :
+        sleepy ? 'M-8 0 Q0 1 8 0' : sad ? 'M-13 4 Q0 -8 13 4' :
+          wide ? 'M-19 -4 Q0 9 19 -4 Q16 15 0 15 Q-16 15 -19 -4 Z' :
+            mouthShape === '23' ? 'M-14 1 Q-1 13 15 -5' : 'M-12 0 Q0 11 12 0');
+      mouth.setAttribute('stroke', color);
+      mouth.setAttribute('fill', o || wide ? color : 'none');
+      mouth.setAttribute('transform', 'translate(' + r2(HEAD_C + Math.sin(yaw) * 87) + ' 169) scale(' + r2(Math.cos(yaw)) + ' 1)');
+    }
 
     function buildEye(k) {
       var node = el('path', { fill: '#1A1A1A', stroke: 'none', 'stroke-width': '1.6' });
@@ -682,6 +821,7 @@ window.EMOTION_SEED = [
     bodyG.appendChild(eyeL.node);
     bodyG.appendChild(eyeR.node);
     svg.appendChild(bodyG);
+    svg.setAttribute('data-grok-body', bodyId);
 
     var fxFront = el('g', { 'pointer-events': 'none' });
     svg.appendChild(fxFront);
@@ -887,9 +1027,9 @@ window.EMOTION_SEED = [
     function setBodyColor(color) {
       if (color === curBodyColor) return;
       curBodyColor = color;
-      stopA.setAttribute('stop-color', shade(color, 0.22));
+      stopA.setAttribute('stop-color', shade(color, hasSeam ? 0.37 : 0.22));
       stopB.setAttribute('stop-color', color);
-      stopC.setAttribute('stop-color', shade(color, -0.12));
+      stopC.setAttribute('stop-color', shade(color, hasSeam ? -0.28 : -0.12));
       if (curSketch > 0.5) head.setAttribute('stroke', shade(color, -0.6));
     }
 
@@ -974,6 +1114,7 @@ window.EMOTION_SEED = [
       var yaw = b.yaw || 0;
       setEye(eyeL, pose.left, 0, sketch, yaw);
       setEye(eyeR, pose.right, 1, sketch, yaw);
+      renderMouth(pose, yaw, sketch);
 
       if (lite) return;
 
@@ -1129,7 +1270,7 @@ window.EMOTION_SEED = [
       if (svg.parentNode) svg.parentNode.removeChild(svg);
     }
 
-    return { svg: svg, applyPose: applyPose, burst: burst, destroy: destroy };
+    return { svg: svg, applyPose: applyPose, setBody: setBody, setExpression: setExpression, burst: burst, destroy: destroy };
   }
 
   EB.createBall = createBall;
@@ -1467,6 +1608,8 @@ window.EMOTION_SEED = [
     this._theme = opts.color
       ? { body: opts.color, eyes: opts.eyeColor || '#FFFFFF' }
       : null;
+    this._body = window.GROK_BODIES.find(function (body) { return body.id === opts.body; }) || window.GROK_BODIES[0];
+    this.ball.setBody(this._body.id);
     this._eyeScale = opts.eyeScale || 1;
     this._lastTick = 0;
     this._spin = null;   /* { x, v, t }：弹簧驱动的整圈自旋（彩带触发源） */
@@ -1538,6 +1681,19 @@ window.EMOTION_SEED = [
 
     get emotionId() { return this._def ? this._def.id : null; },
     get touring() { return this._touring; },
+    get bodyId() { return this._body.id; },
+
+    /** Change presentation without losing the emotion, gaze, animation or listeners. */
+    setBody: function (id) {
+      var body = window.GROK_BODIES.find(function (entry) { return entry.id === id; });
+      if (!body) return false;
+      if (body === this._body) return true;
+      this._body = body;
+      this.ball.setBody(body.id);
+      this._transDur = 0;
+      if (!this._active) this.renderStatic();
+      return true;
+    },
 
     /* ---------- 核心：切换表情（含兜底） ---------- */
     setEmotion: function (id, o) {
@@ -1553,6 +1709,7 @@ window.EMOTION_SEED = [
       var prevId = this._def ? this._def.id : null;
       this._prevPose = this._lastPose ? clonePose(this._lastPose) : null;
       this._def = def;
+      this.ball.setExpression(def.id);
       this._emoStart = now;
       this._transStart = now;
       this._transDur = this._prevPose ? def.transition : 0;
@@ -1875,11 +2032,13 @@ window.EMOTION_SEED = [
         pose.right.scaleY *= this._eyeScale;
       }
 
-      /* 实例主题色（baby bot）：体色恒为主题色，眼睛仅覆盖默认黑 */
-      if (this._theme) {
-        pose.body.color = this._theme.body;
-        if (pose.left.color === DEFAULT_EYE.color) pose.left.color = this._theme.eyes;
-        if (pose.right.color === DEFAULT_EYE.color) pose.right.color = this._theme.eyes;
+      /* Explicit custom colors always win; themed eyes retain contrast for plush bodies. */
+      var bodyColor = this._theme ? this._theme.body : this._body.color;
+      var eyeColor = this._theme ? this._theme.eyes : this._body.eyes;
+      if (bodyColor) pose.body.color = bodyColor;
+      if (eyeColor) {
+        if (pose.left.color === DEFAULT_EYE.color || (this._body.id !== 'classic' && /^(22|25)$/.test(def.id))) pose.left.color = eyeColor;
+        if (pose.right.color === DEFAULT_EYE.color || (this._body.id !== 'classic' && /^(22|25)$/.test(def.id))) pose.right.color = eyeColor;
       }
 
       /* 开合度 = 配置基础值 × 眨眼弹簧（弹簧可过冲到 1.08） */
@@ -1974,6 +2133,7 @@ window.EMOTION_SEED = [
     create: EB.create,
     EMOTIONS: emotions,
     GROUPS: groups,
+    BODIES: window.GROK_BODIES,
     config: EB.config,
     version: EB.version
   };
