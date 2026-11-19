@@ -949,6 +949,12 @@ window.EMOTION_SEED = [
       }
     }
     function setExpression(id) { mouthShape = id; }
+    // Center both embroidered features as one unit relative to the torso, not the tuft.
+    function faceCenterOffsetY() {
+      if (bodyId === 'night-seed') return -16;
+      if (bodyId === 'sprout' && mouthShape === '22') return -19;
+      return 0;
+    }
     function renderPlush(pose, yaw, sketch) {
       var cos = Math.cos(yaw);
       var active = hasSeam && sketch <= .5;
@@ -976,7 +982,7 @@ window.EMOTION_SEED = [
         var openness = clamp(Math.pow(Math.max(.005, movement.open), .6) * def[k], .05, 1.23);
         var lift = bubu && mouthShape === '22' ? '' : def[4] || (isIdle ? profile.brow : '');
         var bx = HEAD_C + side * profile.dx * fh + yy * 86;
-        var by = profile.y - (bubu && /^(22|24)$/.test(mouthShape) ? 15 : 0) + clamp((movement.y || 0) * .21, -4, 4);
+        var by = profile.y + faceCenterOffsetY() - (bubu && /^(22|24)$/.test(mouthShape) ? 15 : 0) + clamp((movement.y || 0) * .21, -4, 4);
         var tilt = isIdle && profile.sleepy ? -side * 10 : bubu ? (mouthShape === '22' ? 13 : side * 4) : cobalt ? side * 6 : 0;
         eye.group.setAttribute('transform', 'translate(' + r2(bx) + ' ' + r2(by) + ') rotate(' + tilt + ') scale(' + r2(fh * profile.sx) + ' ' + profile.sy + ')');
         var closed = openness < .22;
@@ -1041,7 +1047,7 @@ window.EMOTION_SEED = [
       var color = hasSeam ? (mode === 'grin' ? '#85747a' : (bodyId === 'night-seed' || bodyId === 'sprout') ? '#151322' : '#312535') : pose.left.color;
       var d = stitchMouth[mode] || stitchMouth.base;
       var tx = HEAD_C + Math.sin(yaw) * 87 + (profile ? profile.mx : 0);
-      var y = profile ? profile.my + (/^(cheer|gasp)$/.test(mode) ? 5 : 0) : 169;
+      var y = profile ? profile.my + faceCenterOffsetY() + (/^(cheer|gasp)$/.test(mode) ? 5 : 0) : 169;
       var scale = mode === 'bubuStar' ? .95 : mode === 'bubu' ? 1.05 : profile && mode === profile.mouth ? profile.ms : 1;
       var transform = 'translate(' + r2(tx) + ' ' + y + ') scale(' + r2(Math.cos(yaw)*scale) + ' ' + scale + ')';
       mouth.setAttribute('d', d); mouth.setAttribute('stroke', color);
