@@ -72,8 +72,8 @@ for (const code of [source, scripts[0]]) {
   vm.runInContext(code, app.sandbox);
   const api = app.win.GrokBall;
   assert.deepEqual(Array.from(api.BODIES, e => e.id), ids);
-  assert.deepEqual(Array.from(api.EMOTIONS, e => e.id).filter(id => !['22','23','24','25'].includes(id)), legend);
-  assert.equal(api.EMOTIONS.length, 36);
+  assert.deepEqual(Array.from(api.EMOTIONS, e => e.id).filter(id => !['22','23','24','25','42','43','44','45','46','47'].includes(id)), legend);
+  assert.equal(api.EMOTIONS.length, 42);
   for (const body of ids) for (const emotion of api.EMOTIONS) {
     const host = new Element();
     const e = api.create(host, { body, emotion: emotion.id, autostart: false });
@@ -130,6 +130,13 @@ for (const code of [source, scripts[0]]) {
   assert.equal(mojo.emotionId, '25');
   assert.equal(mojoSvg.getAttribute('viewBox'), '-15 -15 259 259');
   assert.equal(mojoHost.querySelectorAll('ellipse').filter(n => n.getAttribute('fill') === '#fff4da').length, 2);
+  mojo.setBody('backbeat');
+  mojo.setEmotion('42');
+  assert.ok(visiblePaths().some(path => path.getAttribute('fill') === '#fff2dc'));
+  mojo.setEmotion('47');
+  assert.equal(visiblePaths().filter(path => path.getAttribute('fill') === '#85d9ff').length, 2);
+  mojo.setEmotion('02');
+  assert.equal(visiblePaths().filter(path => ['#fff2dc','#85d9ff'].includes(path.getAttribute('fill'))).length, 0);
   mojo.destroy();
 
   const host = new Element();
@@ -156,7 +163,7 @@ const app = harness();
 scripts.forEach(code => vm.runInContext(code, app.sandbox));
 const { nodes } = app;
 assert.equal(nodes.bodyControls.querySelectorAll('.body-card').length, 9);
-assert.equal(nodes.controls.querySelectorAll('.emo-card').length, 36);
+assert.equal(nodes.controls.querySelectorAll('.emo-card').length, 42);
 const bodyCard = id => nodes.bodyControls.querySelectorAll('.body-card').find(el => el.dataset.body === id);
 const emoCard = id => nodes.controls.querySelectorAll('.emo-card').find(el => el.dataset.id === id);
 bodyCard('encore').fire('click');
@@ -180,4 +187,4 @@ const privateTab = harness(undefined, false);
 scripts.forEach(code => vm.runInContext(code, privateTab.sandbox));
 assert.equal(privateTab.nodes.previewId.textContent, 'ID 02');
 assert.equal(privateTab.nodes.previewBall.children[0].getAttribute('data-grok-body'), 'classic');
-console.log('PASS: source and inline SDK, all 324 presets, legacy IDs/AI, live switches, selection/persistence, private mode');
+console.log('PASS: source and inline SDK, all 378 presets, legacy IDs/AI, live switches, selection/persistence, private mode');
