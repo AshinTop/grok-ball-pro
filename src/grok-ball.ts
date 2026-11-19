@@ -15,7 +15,7 @@ export type BuiltInEmotionId =
 
 export type EmotionId = BuiltInEmotionId | (string & {});
 export type EmotionGroupKey = 'life' | 'emotion' | 'agent' | 'custom';
-export type BallBodyId = 'classic' | 'midnight' | 'encore' | 'backbeat' | 'night-seed' | 'sprout';
+export type BallBodyId = 'classic' | 'midnight' | 'encore' | 'red' | 'sunshine' | 'jade' | 'backbeat' | 'night-seed' | 'sprout';
 export interface BallBody { readonly id: BallBodyId; readonly name: string; readonly en: string; readonly swatch: string; }
 export type BodyShape = 'blob' | 'wedge' | 'gem';
 

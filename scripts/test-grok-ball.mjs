@@ -66,7 +66,7 @@ const legend = [
   '00','01','02','03','04','05','06','07','10','11','12','13','14','15','16','17','18','19','20','21',
   '30','31','32','33','34','35','36','37','38','39','40','41'
 ];
-const ids = ['classic','midnight','encore','backbeat','night-seed','sprout'];
+const ids = ['classic','midnight','encore','red','sunshine','jade','backbeat','night-seed','sprout'];
 for (const code of [source, scripts[0]]) {
   const app = harness();
   vm.runInContext(code, app.sandbox);
@@ -87,6 +87,25 @@ for (const code of [source, scripts[0]]) {
     }
     e.destroy(); assert.equal(host.children.length, 0);
   }
+  // Soft bodies have visible embroidered eyes rather than the classic ring paths.
+  // Changing the expression and body controls does not blend the two face rigs.
+  const faceHost = new Element();
+  const faceBall = api.create(faceHost, { body: 'encore', emotion: '02', autostart: false });
+  const eyeWhite = () => faceHost.querySelectorAll('ellipse').filter(p => p.getAttribute('fill') === '#fff4da');
+  const distinctMouth = () => faceHost.querySelectorAll('path').find(p => p.getAttribute('stroke-width') === '7.5')?.getAttribute('d');
+  assert.equal(eyeWhite().length, 2);
+  const wave = distinctMouth();
+  assert.ok(wave);
+  faceBall.setBody('jade');
+  assert.notEqual(distinctMouth(), wave);
+  faceBall.setBody('sunshine');
+  assert.ok(faceHost.querySelectorAll('g').some(g => g.getAttribute('clip-path')?.match(/lid[01]/)));
+  faceBall.setEmotion('24');
+  assert.ok(!faceHost.querySelectorAll('g').some(g => g.getAttribute('clip-path')?.match(/lid[01]/)));
+  faceBall.setBody('classic');
+  assert.equal(faceBall.emotionId, '24');
+  assert.ok(faceHost.querySelectorAll('path').some(p => p.style.display === ''));
+  faceBall.destroy();
   const host = new Element();
   const ball = api.create(host, { emotion: '02' });
   const firstSvg = host.children[0];
@@ -110,7 +129,7 @@ for (const code of [source, scripts[0]]) {
 const app = harness();
 scripts.forEach(code => vm.runInContext(code, app.sandbox));
 const { nodes } = app;
-assert.equal(nodes.bodyControls.querySelectorAll('.body-card').length, 6);
+assert.equal(nodes.bodyControls.querySelectorAll('.body-card').length, 9);
 assert.equal(nodes.controls.querySelectorAll('.emo-card').length, 36);
 const bodyCard = id => nodes.bodyControls.querySelectorAll('.body-card').find(el => el.dataset.body === id);
 const emoCard = id => nodes.controls.querySelectorAll('.emo-card').find(el => el.dataset.id === id);
@@ -135,4 +154,4 @@ const privateTab = harness(undefined, false);
 scripts.forEach(code => vm.runInContext(code, privateTab.sandbox));
 assert.equal(privateTab.nodes.previewId.textContent, 'ID 02');
 assert.equal(privateTab.nodes.previewBall.children[0].getAttribute('data-grok-body'), 'classic');
-console.log('PASS: source and inline SDK, all 216 presets, legacy IDs/AI, live switches, selection/persistence, private mode');
+console.log('PASS: source and inline SDK, all 324 presets, legacy IDs/AI, live switches, selection/persistence, private mode');
