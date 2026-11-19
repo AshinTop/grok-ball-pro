@@ -888,8 +888,8 @@ window.EMOTION_SEED = [
       sunshine: { dx:26, y:106, sx:.86, sy:.79, iris:'#da759a', dark:'#95385e', mouth:'grin', my:147, mx:1, ms:1.0, sleepy:true },
       jade: { dx:13.3, y:108, sx:.53, sy:.45, iris:'#e27d3b', dark:'#aa472c', mouth:'saw', my:141, mx:-1, ms:1.13 },
       backbeat: { dx:24, y:106, sx:.56, sy:.55, iris:'#225e77', dark:'#142c39', mouth:'tiny', my:149, mx:2, ms:.75 },
-      'night-seed': { dx:21, y:127, sx:.78, sy:.90, iris:'#2d639c', dark:'#214784', mouth:'stubborn', my:166, mx:0, ms:1, brow:'stubborn' },
-      sprout: { dx:22, y:101, sx:.82, sy:.89, iris:'#246db3', dark:'#245693', mouth:'stubborn', my:142, mx:0, ms:.88 }
+      'night-seed': { dx:21, y:121, sx:.78, sy:.90, iris:'#2d639c', dark:'#214784', mouth:'stubborn', my:158, mx:0, ms:1, brow:'stubborn' },
+      sprout: { dx:22, y:94, sx:.82, sy:.89, iris:'#246db3', dark:'#245693', mouth:'stubborn', my:132, mx:0, ms:.88 }
     };
 
     function setBody(id) {
@@ -902,11 +902,15 @@ window.EMOTION_SEED = [
       svg.setAttribute('data-grok-body', id);
       var tallTop = id === 'night-seed' || id === 'sprout';
       svg.setAttribute('viewBox', tallTop ? '-32 -116 293 372' : '-15 -15 259 259');
-      var torso = id === 'night-seed' ? 'translate(0 13) scale(1 .91)'
-        : id === 'sprout' ? 'translate(7 -6) scale(.94 1.04)' : '';
+      var torso = id === 'night-seed' ? 'translate(0 13) scale(1 .86)'
+        : id === 'sprout' ? 'translate(7 -6) scale(.94 .96)' : '';
       [head, felt].forEach(function (layer) {
         if (torso) layer.setAttribute('transform', torso); else layer.removeAttribute('transform');
       });
+      // Keep the crown fixed and the stitched seams aligned with the compressed torso.
+      if (tallTop) trimFront.setAttribute('transform', id === 'night-seed'
+        ? 'translate(0 .71) scale(1 .945)' : 'translate(0 -.46) scale(1 .923)');
+      else trimFront.removeAttribute('transform');
       grad.setAttribute('cx', hasSeam ? '41%' : '38%');
       grad.setAttribute('cy', hasSeam ? '38%' : '32%');
       grad.setAttribute('r', hasSeam ? '66%' : '75%');
