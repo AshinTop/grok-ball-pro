@@ -1,5 +1,11 @@
 # Grok Ball Pro · 五月天同人舞台 🎵
 
+[![Grok Ball Pro：五色球同人舞台](./assets/promo/pro-stage-banner.svg)](https://ashintop.github.io/grok-ball-pro/)
+
+▶ **[在线试玩 · Play online](https://ashintop.github.io/grok-ball-pro/)**　·　[表情动图](#九款球体动态预览)　·　[原版演示](#经典版在线演示与示例)　·　[开发接入](#表情与开发)
+
+🎭 **9 款球体 × 42 种表情**　｜　🎸 **五月天同人舞台**　｜　🛠️ **单文件 SVG**　｜　📄 **[MIT](./LICENSE)**
+
 一个可以放在浏览器里的迷你安可现场。用鼠标和表情球互动，在 **9 款球体 × 42 个表情**里自由搭配，再点「安可一下」让当前球转圈、撒彩纸。五位团员的球登场时，旁边还会亮起各自的演出道具。一个 HTML 即可离线运行，不需要安装应用、连接 AI 或登录。
 
 Grok Ball Pro 延续 TyCoding 的鼠标注视、SVG 表情与 Agent 状态接口，在经典眼环之外加入五月天同人舞台和七款毛绒造型。
@@ -14,7 +20,7 @@ Grok Ball Pro 延续 TyCoding 的鼠标注视、SVG 表情与 Agent 状态接口
 
 ## 🎛️ 怎样玩
 
-1. 下载或克隆本仓库，直接用浏览器打开 [`index.html`](./index.html)。
+1. 打开 [在线试玩](https://ashintop.github.io/grok-ball-pro/)；也可下载或克隆本仓库，用浏览器打开 [`index.html`](./index.html) 离线体验。
 2. 在工作台选球体、再选表情。两个选择互不覆盖；浏览器允许本地存储时，刷新后会恢复上一次搭配。
 3. 打开「五月天手册」，读乐团介绍、点一位团员切换对应球体，或跳转官方 MV 和演唱会现场。点击「安可一下」只触发视觉效果，不换球、不换表情、不自动播歌。系统开启「减少动态效果」时，安可不会触发转圈或撒彩纸。
 
