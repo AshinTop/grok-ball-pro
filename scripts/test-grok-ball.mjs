@@ -41,7 +41,7 @@ function harness(saved, withStorage = true, reducedMotion = false, protocol = 'f
     button.className = 'stage-member'; button.dataset.body = match[1];
     nodes.stageMembers.appendChild(button);
   }
-  nodes.colorMode.value = 'auto'; nodes.colorInput.value = '#1a1a1a'; nodes.sizeRange.value = '260';
+  nodes.colorMode.value = 'auto'; nodes.colorInput.value = '#1a1a1a'; nodes.sizeRange.value = '260'; nodes.sizeRange.min = '140'; nodes.sizeRange.max = '320';
   const storage = new Map(saved || []);
   let now = 100, nextId = 1;
   const frames = new Map();
@@ -402,5 +402,27 @@ for (const protocol of ['file:', 'https:']) {
   assert.equal(played.at(-1).stopped, true);
   clickBall('encore');
   assert.equal(played.length, count + 3);
+}
+{
+  const app = harness();
+  scripts.forEach(code => vm.runInContext(code, app.sandbox));
+  const { sizeRange, previewBall } = app.nodes;
+  const caps = [211.2, 237.6, 257.4, 195]; // representative phone viewports
+  const width = (cap, factor) => Math.min(140, cap) + (cap - Math.min(140, cap)) * factor;
+  const initial = Number(previewBall.style['--ball-growth']);
+  assert.equal(initial, 2 / 3);
+  assert.equal(previewBall.style['--ball-size'], undefined, 'leave desktop initial CSS sizing unchanged');
+  const samples = ['140', '200', '260', '290', '320'].map(value => {
+    sizeRange.value = value;
+    sizeRange.fire('input');
+    assert.equal(previewBall.style['--ball-size'], value + 'px');
+    return Number(previewBall.style['--ball-growth']);
+  });
+  assert.deepEqual(samples, [0, 1/3, 2/3, 5/6, 1]);
+  for (const cap of caps) {
+    const sizes = samples.map(factor => width(cap, factor));
+    assert.ok(sizes.every((n, i) => i === 0 || n > sizes[i - 1]));
+    assert.equal(sizes.at(-1), cap);
+  }
 }
 console.log('PASS: source and inline SDK, all 378 presets, legacy IDs/AI, live switches, selection/persistence, private mode, five instruments, encore and reduced motion, Wow mouth, balanced expressions, a genuine wink, opt-in official tracks, and original cue lifecycle');
