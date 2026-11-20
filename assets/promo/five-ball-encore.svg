@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 172" width="1040" height="172" role="img" aria-labelledby="title desc">
+  <title id="title">五球安可</title>
+  <desc id="desc">五颗彩色的球在舞台上集合。拖球组乐队，集齐五球解锁安可。</desc>
+  <defs>
+    <linearGradient id="bg"><stop stop-color="#1c2334"/><stop offset="1" stop-color="#292047"/></linearGradient>
+    <radialGradient id="lit"><stop stop-color="#fff" stop-opacity=".43"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    <g id="ball">
+      <circle r="31" stroke="#f4eaff" stroke-opacity=".45" stroke-width="1.5" fill="currentColor"/>
+      <circle cx="-8" cy="-10" r="24" fill="url(#lit)"/>
+      <ellipse cx="-9" cy="-2" rx="3.7" ry="6" fill="#2a1b37"/>
+      <ellipse cx="9" cy="-2" rx="3.7" ry="6" fill="#2a1b37"/>
+      <path d="M-6 11q6 6 12 0" stroke="#2a1b37" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </g>
+  </defs>
+  <rect x="1" y="1" width="1038" height="170" rx="23" fill="url(#bg)" stroke="#615884"/>
+  <path d="M451 0h70l80 172H351zM809 0h104l93 172H592z" fill="#d1bdff" opacity=".065"/>
+  <rect x="35" y="23" width="127" height="23" rx="11.5" fill="#34405a"/>
+  <text x="98.5" y="38" text-anchor="middle" fill="#d4ebfe" font-family="system-ui,sans-serif" font-size="11" font-weight="700" letter-spacing="1.5">GROK BALL PRO</text>
+  <text x="35" y="99" fill="#fff1cb" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="46" font-weight="800">五球安可</text>
+  <text x="37" y="134" fill="#cfcae4" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="18">拖球组乐队 · 集齐五球解锁安可</text>
+  <path d="M489 133h455" stroke="#a89ee3" stroke-opacity=".36" stroke-width="2" stroke-linecap="round"/>
+  <use href="#ball" x="510" y="88" color="#78c6fa"/><use href="#ball" x="597" y="95" color="#f5cf72"/>
+  <use href="#ball" x="684" y="85" color="#f795a4"/><use href="#ball" x="771" y="95" color="#a1dc9a"/>
+  <use href="#ball" x="858" y="88" color="#eaa6d0"/>
+  <g fill="#ffe3a4"><path d="M922 40l3 9 9 3-9 3-3 9-3-9-9-3 9-3z"/><circle cx="466" cy="52" r="3"/><circle cx="874" cy="39" r="3"/><circle cx="955" cy="106" r="3"/></g>
+</svg>

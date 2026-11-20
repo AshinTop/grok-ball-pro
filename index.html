@@ -367,6 +367,15 @@
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
   }
+  .encore-promo{flex:none;width:100%;max-width:1440px;padding:0 30px 8px}
+  .encore-promo a{display:flex;align-items:center;gap:12px;min-height:44px;padding:6px 12px;border-radius:12px;border:1px solid #615884;background:linear-gradient(110deg,#1c2334,#292047);color:#fff1cb;text-decoration:none}
+  .encore-promo a:hover,.encore-promo a:focus-visible{background:#332952;outline:2px solid #a894d8;outline-offset:1px}
+  .encore-promo strong{white-space:nowrap;font-size:14px}
+  .encore-promo small{color:#e2d7ec;font-size:11px}
+  .encore-promo i{font-style:normal;margin-left:auto;white-space:nowrap;font-size:12px}
+  .encore-promo .beats{display:flex;gap:3px;align-items:center;flex:none}
+  .encore-promo .beats span{width:7px;height:7px;border-radius:50%;background:var(--c)}
+  @media(max-width:720px){.encore-promo{padding:0 12px 7px}.encore-promo a{gap:7px}.encore-promo .beats span{width:5px;height:5px}}
 </style>
 </head>
 <body>
@@ -386,6 +395,12 @@
     </a>
     </div>
   </header>
+  <aside class="encore-promo" aria-label="五球安可同人演示">
+    <a href="./encore/index.html">
+      <span class="beats" aria-hidden="true"><span style="--c:#78c6fa"></span><span style="--c:#f5cf72"></span><span style="--c:#f795a4"></span><span style="--c:#a1dc9a"></span><span style="--c:#eaa6d0"></span></span>
+      <strong>五球安可</strong><small>非官方 · 非商用 Demo</small><i>试玩 ›</i>
+    </a>
+  </aside>
 
   <div class="ball" id="ball"></div>
 
@@ -956,3 +971,4 @@ window.EB_RINGS={HEAD_C:114.2705,EYE_HALF:21,STAR_GOLD:"#f4c34e",EXPRESSIONS:[[[
   </script>
 </body>
 </html>
+
