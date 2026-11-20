@@ -1,16 +1,16 @@
-# Grok Ball Pro · 五月天同人舞台
+# Grok Ball Pro · 五月天同人舞台 🎵
 
 一个可以放在浏览器里的迷你安可现场。用鼠标和表情球互动，在 **9 款球体 × 42 个表情**里自由搭配，再点「安可一下」让当前球转圈、撒彩纸。五位团员的球登场时，旁边还会亮起各自的演出道具。一个 HTML 即可离线运行，不需要安装应用、连接 AI 或登录。
 
 > **非官方同人项目**。角色是用 SVG 绘制的二次创作，不是官方周边，也不是五月天、相信音乐、STAYREAL 或 xAI 的合作项目。
 
-## 怎样玩
+## 🎛️ 怎样玩
 
 1. 下载或克隆本仓库，直接用浏览器打开 [`index.html`](./index.html)。
 2. 在工作台选球体、再选表情。两个选择互不覆盖；浏览器允许本地存储时，刷新后会恢复上一次搭配。
 3. 打开「五月天手册」，读乐团介绍、点一位团员切换对应球体，或跳转官方 MV 和演唱会现场。点击「安可一下」只触发视觉效果，不换球、不换表情、不自动播歌。系统开启「减少动态效果」时，安可不会触发转圈或撒彩纸。
 
-## 五位团员的登场曲
+## 🎶 五位团员的登场曲
 
 选到成员球后，舞台会显示「登场曲」。每首都是五月天本团作品；按演唱、作曲或编曲的角色联想挑选，不冒称官方指定曲、独奏或独立乐器分轨。
 
@@ -26,21 +26,26 @@ HTTP(S) 网页可按需加载**可见的 YouTube 官方播放器**，默认不�
 
 ## 九款球体动态预览
 
-下面是这个版本实际的表情球，不是上游截图。每格都由 `src/grok-ball.js` 逐帧渲染，按同一顺序切换：睡眠 → 开心 → 星光眼 → 俏皮眨眼 → 哇哦 → 思考中 → 任务完成 → 探头看看 → 笑出眼泪。经典原版会随表情换色，其余球保留各自的主题造型。点击动图可单独查看或保存；完整 42 种表情请在 [`index.html`](./index.html) 互动体验。
+九款动图都用「一个表情停一拍，再切下一个」的剪辑：待机放空 → 开心 → 惊讶 → 生气 → 思考中 → 任务完成。
 
-| 经典原版 | 经典黑球 | 阿信粉球 |
+- **经典原版**取自 [TyCoding 原版动图](./assets/promo/10-expression-switch.gif)的正脸帧，保留原始眼环、球身比例与配色。**经典黑球**使用上游引擎和黑球、白眼配色重录。
+- **七款毛绒球**使用 Pro 引擎的定格表情，保留各自的配色和配件。每张动图都有独立的表情名和 ID。
+
+点击动图可单独查看或保存；完整 42 种表情仍可在 [`index.html`](./index.html) 互动体验。
+
+| ⚪ 经典原版 | ⚫ 经典黑球 | 🎙️ 阿信粉球 |
 | :---: | :---: | :---: |
 | [![经典原版 · 表情切换](./assets/pro-expressions/classic.gif)](./assets/pro-expressions/classic.gif) | [![经典黑球 · 表情切换](./assets/pro-expressions/midnight.gif)](./assets/pro-expressions/midnight.gif) | [![阿信粉球 · 表情切换](./assets/pro-expressions/encore.gif)](./assets/pro-expressions/encore.gif) |
 
-| 怪兽红球 | 玛莎黄球 | 石头绿球 |
+| 🎸 怪兽红球 | 🟡 玛莎黄球 | 🎸 石头绿球 |
 | :---: | :---: | :---: |
 | [![怪兽红球 · 表情切换](./assets/pro-expressions/red.gif)](./assets/pro-expressions/red.gif) | [![玛莎黄球 · 表情切换](./assets/pro-expressions/sunshine.gif)](./assets/pro-expressions/sunshine.gif) | [![石头绿球 · 表情切换](./assets/pro-expressions/jade.gif)](./assets/pro-expressions/jade.gif) |
 
-| 冠佑眼镜蓝球 | 蓝色梦想倔强卜卜 | 胡萝卜卜卜 |
+| 🥁 冠佑眼镜蓝球 | 💙 蓝色梦想倔强卜卜 | 🥕 胡萝卜卜卜 |
 | :---: | :---: | :---: |
 | [![冠佑眼镜蓝球 · 表情切换](./assets/pro-expressions/backbeat.gif)](./assets/pro-expressions/backbeat.gif) | [![蓝色梦想倔强卜卜 · 表情切换](./assets/pro-expressions/night-seed.gif)](./assets/pro-expressions/night-seed.gif) | [![胡萝卜卜卜 · 表情切换](./assets/pro-expressions/sprout.gif)](./assets/pro-expressions/sprout.gif) |
 
-## 认识五月天（Mayday）
+## 🎤 认识五月天（Mayday）
 
 五月天是来自台湾的五人摇滚乐团。1997 年，他们以五月天的名字在台北野台开唱演出；1999 年发行《五月天第一张创作专辑》。〈志明与春娇〉把台语写进摇滚乐，而后来的专辑从青春与梦想写到友情、时间与回望。想了解乐团不同阶段的作品，可从[相信音乐的官方艺人页](https://bin-music.com/artist/MAYDAY)继续找专辑、MV 和巡演资料；[中央社的成军回顾](https://www.cna.com.tw/news/amov/201703295024.aspx)记录了早期现场与出道经过。
 
@@ -64,7 +69,7 @@ HTTP(S) 网页可按需加载**可见的 YouTube 官方播放器**，默认不�
 
 《第二人生》把“如果末日没有发生，接下来怎么活”当成专辑概念，围绕这张专辑展开的世界巡演主题曲[〈诺亚方舟〉](https://www.youtube.com/watch?v=V46K7apDziA)适合接着听。《自传》后来又延伸成「人生无限公司」巡演：同一首歌，在唱片里是一个人的回忆，在现场可以变成全场的合唱。这也是网页把“选成员”做成“点名上台”、把动画按钮做成“安可”的原因。[相信音乐的专辑及巡演资料](https://bin-music.com/artist/MAYDAY)
 
-## 球体为什么长这样？
+## 🧵 球体为什么长这样？
 
 - **五色成员球**：参考[相信音乐 #5525 表情包包球吊饰](https://www.shopping.bin-music.com.tw/SalePage/Index/10286583)的配色和辨识特征，用 SVG 画出绒面、缝线、眼眉和配件。上表的球名是本站名称，不是商品正式品名。
 - **两款卜卜**：另参考 STAYREAL 的[蓝色梦想倔强卜卜](https://hkmall.istayreal.com/products/lk26013)与[胡萝卜绒毛公仔](https://hkmall.istayreal.com/products/lf24002)，并不对应团员。胡萝卜卜卜默认是蓝眼小笑，选择「星光眼」可看到受 [Wow 哇卜卜](https://hkmall.istayreal.com/products/lf26009)启发的星眼。
