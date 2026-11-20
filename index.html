@@ -343,7 +343,7 @@
   @media (max-width: 720px) {
     .panel { grid-template-columns: minmax(0, 1fr); gap: 10px; }
     .controls { padding: 14px; }
-    .preview-ball { width: min(var(--ball-size, 240px), 66vw, max(140px, 55svh)); }
+    .preview-ball { --ball-limit: min(320px, 66vw, max(140px, 55svh)); }
     .stage-tracks a { flex-wrap: wrap; gap: 3px 10px; }
     .stage-tracks small { text-align: start; }
   }
@@ -356,7 +356,13 @@
     .panel { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 10px; }
     .preview { grid-row: 1; grid-column: 1; }
     .controls { grid-row: 1; grid-column: 2; padding: 14px; }
-    .preview-ball { width: min(var(--ball-size, 240px), 35vw, max(132px, 50svh)); }
+    .preview-ball { --ball-limit: min(320px, 35vw, max(132px, 50svh)); }
+  }
+  @media (max-width: 720px), (min-width: 600px) and (max-width: 1024px) and (max-height: 540px) and (orientation: landscape) {
+    .preview-ball {
+      --ball-min: min(140px, var(--ball-limit));
+      width: calc(var(--ball-min) + (var(--ball-limit) - var(--ball-min)) * var(--ball-growth, .666667));
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
@@ -913,9 +919,15 @@ window.EB_RINGS={HEAD_C:114.2705,EYE_HALF:21,STAR_GOLD:"#f4c34e",EXPRESSIONS:[[[
 
     colorMode.addEventListener('change', rebuild);
     colorInput.addEventListener('change', function () { if (colorMode.value === 'custom') rebuild(); });
-    sizeRange.addEventListener('input', function () {
-      previewBox.style.setProperty('--ball-size', sizeRange.value + 'px');
-    });
+    function resizePreview(event) {
+      var min = Number(sizeRange.min);
+      var max = Number(sizeRange.max);
+      var value = Number(sizeRange.value);
+      if (event) previewBox.style.setProperty('--ball-size', value + 'px');
+      if (max > min) previewBox.style.setProperty('--ball-growth', String(clamp((value - min) / (max - min), 0, 1)));
+    }
+    sizeRange.addEventListener('input', resizePreview);
+    resizePreview();
 
     function gazeOn(eng, el, e) {
       if (!eng) return;
