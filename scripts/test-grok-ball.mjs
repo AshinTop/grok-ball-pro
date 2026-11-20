@@ -34,7 +34,7 @@ class Element {
 }
 function harness(saved, withStorage = true, reducedMotion = false) {
   const nodes = Object.fromEntries(['bodyControls', 'previewBody', 'controls', 'previewBall', 'ball', 'previewName',
-    'previewId', 'previewDesc', 'colorMode', 'colorInput', 'sizeRange', 'stageNotes', 'stageOpen', 'stageMembers', 'stageEncore', 'stageLive'].map(id => [id, new Element()]));
+    'previewId', 'previewDesc', 'colorMode', 'colorInput', 'sizeRange', 'stageNotes', 'stageOpen', 'stageMembers', 'stageEncore', 'stageLive', 'stageProp', 'stagePropUse', 'stageRole'].map(id => [id, new Element()]));
   for (const match of html.matchAll(/class="stage-member" data-body="([^"]+)"/g)) {
     const button = new Element('button');
     button.className = 'stage-member'; button.dataset.body = match[1];
@@ -101,6 +101,60 @@ for (const code of [source, scripts[0]]) {
       assert.ok(path.getAttribute('d')?.startsWith('M'));
     }
     e.destroy(); assert.equal(host.children.length, 0);
+  }
+  // Wow animates the real mouth once, then reaches the exact static end pose.
+  for (const body of ids) {
+    const preview = new Element();
+    const animated = api.create(preview,{body, emotion:'02'});
+    const node=preview.querySelectorAll('path').find(p=>p.getAttribute('data-grok-mouth')==='');
+    const mouthScale = () => Number(node.getAttribute('transform').match(/scale\([^ ]+ ([\d.]+)\)$/)[1]);
+    animated.setEmotion('24');
+    app.advance(30,1);const first=mouthScale();
+    app.advance(30,3);const peak=mouthScale();
+    app.advance(30,14);const rest=mouthScale();
+    assert.ok(first<rest && peak>rest, body+' wow opening and settle');
+    app.advance(30,20);assert.equal(mouthScale(),rest,body+' wow does not loop');
+    animated.destroy();
+    const staticHost=new Element(), staticBall=api.create(staticHost,{body,emotion:'24',autostart:false});
+    const staticMouth=staticHost.querySelectorAll('path').find(p=>p.getAttribute('data-grok-mouth')==='');
+    assert.equal(Number(staticMouth.getAttribute('transform').match(/scale\([^ ]+ ([\d.]+)\)$/)[1]),rest);
+    staticBall.destroy();
+  }
+  // Symmetric loading/waking across animations; only the deliberate wink closes one eye.
+  const parseScale = value => Number(value.match(/scale\([^ ]+ ([\d.]+)\)/)[1]);
+  for (const id of ['05','07','11','36','45']) {
+    const host = new Element(), ball=api.create(host,{body:'encore',emotion:id});
+    const whites=host.querySelectorAll('ellipse').filter(p=>['#fff4da','#faf5ee'].includes(p.getAttribute('fill')));
+    for (let frame=0; frame<12; frame++) {
+      app.advance(80);const heights=whites.map(p=>parseScale(p.getAttribute('transform')));
+      assert.ok(Math.abs(heights[0]-heights[1])<=.09,id+' matching open/close');
+    }
+    ball.destroy();
+  }
+  for (const body of ['classic','encore','sprout']) {
+    const host=new Element(), ball=api.create(host,{body,emotion:'02'});
+    ball.setEmotion('23');
+    const eyes=body==='classic'?host.querySelectorAll('path').filter(p=>p.getAttribute('stroke-width')==='1.6'):
+      host.querySelectorAll('ellipse').filter(p=>['#fff4da','#faf5ee'].includes(p.getAttribute('fill')));
+    assert.equal(eyes.length,2);
+    app.advance(40,2);const open=eyes.map(n=>parseScale(n.getAttribute('transform')));
+    app.advance(40,5);const blink=eyes.map(n=>parseScale(n.getAttribute('transform')));
+    app.advance(40,7);const restored=eyes.map(n=>parseScale(n.getAttribute('transform')));
+    assert.ok(open[0]>.6 && blink[0]<.25 && restored[0]>.6,body+' left eye closes and reopens');
+    assert.ok([open[1],blink[1],restored[1]].every(v=>v>.6),body+' right stays open');
+    ball.destroy();
+  }
+  const peek = api.config.get('45');
+  assert.deepEqual(Array.from(peek.pool),[1]);
+  const pair = app.win.EB_RINGS.EXPRESSIONS[1], height = eye=>Math.max(...eye.map(p=>p[1]))-Math.min(...eye.map(p=>p[1]));
+  assert.ok(Math.max(height(pair[0]),height(pair[1]))/Math.min(height(pair[0]),height(pair[1]))<1.05);
+  for (const body of ids.slice(2)) {
+    const host=new Element(), ball=api.create(host,{body,emotion:'45',autostart:false});
+    const eyeWhites=host.querySelectorAll('ellipse').filter(p=>['#fff4da','#faf5ee'].includes(p.getAttribute('fill')));
+    assert.equal(eyeWhites.length,2,body+' peek whites');
+    const heights=eyeWhites.map(p=>Number(p.getAttribute('transform').match(/scale\(1 ([\d.]+)\)/)[1]));
+    assert.ok(Math.max(...heights)/Math.min(...heights)<1.1,body+' peek two balanced eyes');
+    ball.destroy();
   }
   // Soft bodies have visible embroidered eyes rather than the classic ring paths.
   // Changing the expression and body controls does not blend the two face rigs.
@@ -217,7 +271,9 @@ for (const reduced of [false, true]) {
     return engine;
   }};
   vm.runInContext(scripts[1], stage.sandbox);
-  const {stageNotes, stageOpen, stageMembers, stageEncore, stageLive, previewBall, previewId, controls} = stage.nodes;
+  const {stageNotes, stageOpen, stageMembers, stageEncore, stageLive, previewBall, previewId, controls, stageProp, stagePropUse, stageRole} = stage.nodes;
+  assert.equal(stageProp.hidden,true);
+  const props={encore:['mic','主唱大人'],red:['red-guitar','怪兽'],sunshine:['bass','玛莎'],jade:['jade-guitar','石头'],backbeat:['drums','冠佑']};
   controls.querySelectorAll('.emo-card').find(card => card.dataset.id === '25').fire('click');
   for (const member of stageMembers.children) {
     stageOpen.fire('click'); assert.equal(stageNotes.open, true);
@@ -227,11 +283,19 @@ for (const reduced of [false, true]) {
     assert.equal(previewId.textContent, 'ID 25');
     assert.equal(stageMembers.children.filter(node => node.getAttribute('aria-pressed') === 'true').length, 1);
     assert.equal(member.getAttribute('aria-pressed'), 'true');
+    const [prop, role] = props[member.dataset.body];
+    assert.equal(stageProp.hidden,false);
+    assert.equal(stagePropUse.getAttribute('href'),'#instrument-'+prop);
+    assert.ok(html.includes('<symbol id="instrument-'+prop+'"'));
+    assert.ok(stageRole.textContent.includes(role));
+    assert.equal(stageRole.hidden,false);
   }
   stageEncore.fire('click');
   assert.match(stageLive.textContent, /冠佑眼镜蓝球/);
   assert.deepEqual(calls, reduced ? [] : [['spin', 1], ['burst', 20]]);
   assert.equal(previewBall.children[0].getAttribute('data-grok-body'), 'backbeat');
   assert.equal(previewId.textContent, 'ID 25');
+  stage.nodes.bodyControls.querySelectorAll('.body-card').find(card=>card.dataset.body==='sprout').fire('click');
+  assert.equal(stageProp.hidden,true);assert.equal(stageRole.hidden,true);assert.equal(stagePropUse.getAttribute('href'),null);
 }
-console.log('PASS: source and inline SDK, all 378 presets, legacy IDs/AI, live switches, selection/persistence, private mode, five-member dialog, encore and reduced motion');
+console.log('PASS: source and inline SDK, all 378 presets, legacy IDs/AI, live switches, selection/persistence, private mode, five instruments, encore and reduced motion, Wow mouth and balanced Peek eyes');

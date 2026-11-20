@@ -166,15 +166,17 @@ window.EMOTION_SEED = [
   },
   {
     id: '05', name: '加载苏醒', group: 'life',
-    desc: '双眼缓慢交替亮起，像系统正在逐项初始化',
-    en: { name: 'Booting', desc: 'Eyes light up in slow alternation, like a system initializing step by step' },
-    transition: 480,
-    pool: [0, 8], poolMs: [6000, 10000], blinkMs: null,
-    anims: [
-      { target: 'left',  prop: 'open', type: 'blink', interval: 1600, dur: 700 },
-      { target: 'right', prop: 'open', type: 'blink', interval: 1600, dur: 700, phaseMs: 800 },
-      { target: 'eyes',  prop: 'scale', type: 'pulse', amp: 0.04, period: 1600 }
-    ]
+    desc: '两眼一起从半睁到亮起，像系统慢慢完成初始化',
+    en: { name: 'Booting', desc: 'Both eyes gradually brighten together as the system boots' },
+    transition: 480, pool: [1], poolMs: [6000, 10000], blinkMs: null,
+    sequence: {
+      frames: [
+        { at: 0,   eyes: { both: { open: .35 } } },
+        { at: 380, eyes: { both: { open: .66 } } },
+        { at: 900, eyes: { both: { open: 1 } } }
+      ]
+    },
+    anims: [{ target: 'eyes', prop: 'scale', type: 'pulse', amp: 0.03, period: 1600 }]
   },
   {
     id: '06', name: '休眠', group: 'life',
@@ -188,10 +190,10 @@ window.EMOTION_SEED = [
   },
   {
     id: '07', name: '抖动唤醒', group: 'life',
-    desc: '整球轻颤，闭合眼环交错睁开，随后进入待机',
-    en: { name: 'Shake Awake', desc: 'The whole body trembles as the eyes stagger open, then settles into idle' },
+    desc: '整球轻颤，两眼同步睁开，随后进入待机',
+    en: { name: 'Shake Awake', desc: 'The whole body trembles as both eyes open together, then settles into idle' },
     transition: 220,
-    pool: [13], poolMs: [800, 800], blinkMs: null,
+    pool: [1], poolMs: [800, 800], blinkMs: null,
     body: { breathe: 0.004 },
     anims: [
       { target: 'body', prop: 'x', type: 'jitter', amp: 4.5, speed: 10, decay: 1600 },
@@ -201,7 +203,7 @@ window.EMOTION_SEED = [
       settle: { next: '02' },
       frames: [
         { at: 0,    eyes: { both: { open: 0.1 } } },
-        { at: 380,  eyes: { left: { open: 0.4 }, right: { open: 0.12 } } },
+        { at: 380,  eyes: { both: { open: 0.32 } } },
         { at: 900,  eyes: { both: { open: 0.7, y: 1 } } },
         { at: 1600, eyes: { both: { open: 1, scaleX: 1.08, scaleY: 1.08, y: -1 } } }
       ]
@@ -225,18 +227,12 @@ window.EMOTION_SEED = [
   },
   {
     id: '11', name: '疑惑', group: 'emotion',
-    desc: '斜眼环轮换，头微倾，一眼放大一眼收小',
-    en: { name: 'Puzzled', desc: 'Skeptical rings, head atilt, one eye enlarged and the other shrunk' },
-    transition: 420,
-    pool: [14, 5, 8], poolMs: [2200, 3800], blinkMs: [2800, 5500],
+    desc: '轻轻歪头，双眼向同一侧打量，眉尖微挑',
+    en: { name: 'Puzzled', desc: 'A tilted head and a curious look to one side' },
+    transition: 420, pool: [1], poolMs: [2200, 3800], blinkMs: [2800, 5500],
     body: { rotate: -8, breathe: 0.008 },
-    eyes: {
-      left:  { y: -4, scaleX: 1.1, scaleY: 1.1 },
-      right: { y: 3,  scaleX: 0.9, scaleY: 0.9, lookX: 3 }
-    },
-    anims: [
-      { target: 'body', prop: 'rotate', type: 'sine', amp: 1.4, period: 3200 }
-    ]
+    eyes: { both: { lookX: 4 }, left: { y: -2, scaleY: 1.02 }, right: { y: 1 } },
+    anims: [{ target: 'body', prop: 'rotate', type: 'sine', amp: 1.4, period: 3200 }]
   },
   {
     id: '12', name: '失落', group: 'emotion',
@@ -396,17 +392,17 @@ window.EMOTION_SEED = [
   },
   {
     id: '23', name: '俏皮眨眼', group: 'emotion',
-    desc: '单眼眨起，另一只眼偷偷看向一侧',
-    en: { name: 'Cheeky Wink', desc: 'One eye winks while the other steals a sidelong glance' },
-    transition: 350, pool: [11], poolMs: [8000, 12000], blinkMs: null,
+    desc: '左眼短暂闭合再睁开，右眼继续偷偷看向一侧',
+    en: { name: 'Cheeky Wink', desc: 'The left eye closes and reopens while the right keeps glancing aside' },
+    transition: 280, pool: [1], poolMs: [8000, 12000], blinkMs: null,
     body: { rotate: -5, breathe: 0.012, color: '#f0e5eb' },
-    eyes: { left: { open: 0.27, lookX: 7 }, right: { open: 1.08, lookX: 7 } },
+    eyes: { both: { lookX: 6 } },
     anims: [{ target: 'body', prop: 'rotate', type: 'sine', amp: 2.4, period: 2000 }]
   },
   {
     id: '24', name: '哇哦', group: 'emotion',
-    desc: '睁圆双眼，嘴巴变成 O 形，身体轻轻后仰',
-    en: { name: 'Wow!', desc: 'Wide eyes and an O-shaped mouth' },
+    desc: '睁圆双眼，嘴巴突然张大后轻轻回弹，身体微微后仰',
+    en: { name: 'Wow!', desc: 'Wide eyes and a quick, soft mouth bounce' },
     transition: 350, pool: [21], poolMs: [8000, 12000], blinkMs: [2900, 5200],
     body: { y: -2, rotate: -3, breathe: 0.015, color: '#f2ede0' },
     eyes: { both: { y: -4, scaleY: 1.13 } }
@@ -520,14 +516,12 @@ window.EMOTION_SEED = [
   },
   {
     id: '36', name: '联网加载', group: 'agent',
-    desc: '左右眼轮流眨，像信号在两端来回跳',
-    en: { name: 'Loading', desc: 'Eyes blink in alternation, like a signal hopping between two endpoints' },
-    transition: 380,
-    pool: [0, 8], poolMs: [6000, 10000], blinkMs: null,
+    desc: '两眼同步轻微呼吸，视线像信号一样横向来回扫描',
+    en: { name: 'Loading', desc: 'Both eyes pulse together as the gaze scans sideways' },
+    transition: 380, pool: [1], poolMs: [6000, 10000], blinkMs: null,
     anims: [
-      { target: 'left',  prop: 'open', type: 'blink', interval: 1200, dur: 380 },
-      { target: 'right', prop: 'open', type: 'blink', interval: 1200, dur: 380, phaseMs: 600 },
-      { target: 'eyes',  prop: 'lookX', type: 'sine', amp: 2, period: 2400 }
+      { target: 'eyes', prop: 'scale', type: 'pulse', amp: 0.055, period: 1200 },
+      { target: 'eyes', prop: 'lookX', type: 'sine', amp: 5, period: 2400 }
     ]
   },
   {
@@ -614,10 +608,10 @@ window.EMOTION_SEED = [
     transition: 360, pool: [7, 16], poolMs: [4500, 8000], blinkMs: [3200, 5700], openness: 0.86,
     body: { rotate: -1, breathe: 0.005, color: '#f1ebe4' }
   },
-  { id: '45', name: "探头看看", group: 'emotion', desc: "小幅侧倾，一只眼大一只眼小", en: { name: "Peek Around", desc: "A small head tilt and one eye peeking wide" },
-    transition: 360, pool: [14, 5], poolMs: [4500, 8000], blinkMs: [3200, 5700], openness: 1,
-    body: { rotate: -5, breathe: 0.009, color: '#f1ebe4' },
-    eyes: { left: { scaleY: .65 }, right: { scaleY: 1.16, lookX: 5 } }
+  { id: '45', name: "探头看看", group: 'emotion', desc: "轻轻探向一侧，两只眼睛一起侧看", en: { name: "Peek Around", desc: "A gentle lean and two eyes glancing to one side" },
+    transition: 360, pool: [1], poolMs: [4500, 8000], blinkMs: [3200, 5700], openness: 1,
+    body: { x: 5, rotate: -5, breathe: 0.009, color: '#f1ebe4' },
+    eyes: { both: { lookX: 6, lookY: -1 }, left: { scaleY: .96 }, right: { scaleY: 1.02 } }
   },
   { id: '46', name: "委屈巴巴", group: 'emotion', desc: "垂眉、噘嘴，眼角挂着小泪滴", en: { name: "A Little Upset", desc: "Drooping brows, a pout and one small tear" },
     transition: 360, pool: [4, 13], poolMs: [4500, 8000], blinkMs: [3200, 5700], openness: 0.72,
@@ -777,8 +771,8 @@ window.EMOTION_SEED = [
     var felt = el('g', { 'pointer-events': 'none' });
     var trimFront = el('g', { 'pointer-events': 'none' });
     var noseGroup = el('g', { 'pointer-events': 'none' });
-    var mouth = el('path', { 'pointer-events': 'none', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '5' });
-    var bodyId = 'classic', mouthShape = '', hasSeam = false;
+    var mouth = el('path', { 'data-grok-mouth': '', 'pointer-events': 'none', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '5' });
+    var bodyId = 'classic', mouthShape = '', mouthStart = null, winkStart = null, hasSeam = false;
     bodyG.appendChild(trimBack);
     bodyG.appendChild(head);
     bodyG.appendChild(felt);
@@ -911,20 +905,20 @@ window.EMOTION_SEED = [
     // [left opening, right opening, pupil x offset, y offset, eyebrow, expression mouth]
     var plushPoses = {
       '00':[.1,.1,0,0,'','rest'], '01':[.72,.48,0,-1,'soft','rest'], '02':[1,.99,0,0,'','base'],
-      '03':[1.04,1.16,3,-1,'lift','base'], '04':[.67,.74,-3,1,'','rest'], '05':[.66,1,0,0,'soft','rest'],
-      '06':[.31,.28,0,2,'','rest'], '07':[.84,.52,-2,0,'lift','base'],
-      '10':[.56,.61,0,0,'soft','joy'], '11':[.65,1.05,4,-2,'side','crook'], '12':[.75,.75,0,4,'sad','pout'],
+      '03':[1.04,1.16,3,-1,'lift','base'], '04':[.67,.74,-3,1,'','rest'], '05':[.96,.96,0,0,'soft','rest'],
+      '06':[.31,.28,0,2,'','rest'], '07':[.97,.97,-1,0,'lift','base'],
+      '10':[.56,.61,0,0,'soft','joy'], '11':[.97,1.01,3,-2,'side','crook'], '12':[.75,.75,0,4,'sad','pout'],
       '13':[1.12,1.12,0,-2,'lift','gasp'], '14':[.73,.79,4,2,'soft','curl'], '15':[.49,.53,-2,2,'sad','rest'],
       '16':[.84,.84,1,0,'focus','rest'], '17':[1.08,.88,3,-1,'sad','gasp'], '18':[.54,.57,4,-1,'side','flat'],
       '19':[.42,.42,0,-1,'','wave'], '20':[.63,.91,-4,-1,'side','crook'], '21':[.84,.84,0,0,'focus','frown'],
-      '22':[1.04,1.06,0,-1,'lift','joy'], '23':[.16,.94,4,-1,'side','wink'], '24':[1.15,1.14,0,-1,'lift','cheer'],
+      '22':[1.04,1.06,0,-1,'lift','joy'], '23':[.99,1.01,3,-1,'side','wink'], '24':[1.15,1.14,0,-1,'lift','cheer'],
       '25':[1.02,1.01,0,0,'soft','joy'],
       '30':[.86,.87,1,-4,'focus','crook'], '31':[1,.97,0,-2,'lift','base'], '32':[.78,.78,0,0,'focus','rest'],
       '33':[.63,.63,0,0,'soft','cheer'], '34':[1.12,1.08,-1,-2,'sad','gasp'], '35':[.8,.87,1,1,'','base'],
-      '36':[.88,.74,2,0,'','flat'], '37':[.86,.96,-2,-4,'soft','base'], '38':[.73,.73,-1,0,'focus','flat'],
+      '36':[.9,.9,0,0,'','flat'], '37':[.86,.96,-2,-4,'soft','base'], '38':[.73,.73,-1,0,'focus','flat'],
       '39':[.95,.95,0,-1,'soft','base'], '40':[.87,.89,-1,-1,'focus','rest'], '41':[.3,.25,0,0,'','rest'],
       '42':[1,.99,0,0,'soft','base'], '43':[1.05,1.02,0,-3,'','blank'],
-      '44':[.82,.84,0,0,'focus','serious'], '45':[.57,1.12,5,0,'side','peeking'],
+      '44':[.82,.84,0,0,'focus','serious'], '45':[.96,1.02,3,0,'side','peeking'],
       '46':[.87,.93,0,2,'sad','pout'], '47':[.12,.12,0,0,'','laugh']
     };
     var stitchMouth = {
@@ -1020,7 +1014,34 @@ window.EMOTION_SEED = [
         stitches('M102 1 Q75 14 63 48 M124 0 Q159 15 169 49', '#f9a54f', null, '.58');
       }
     }
-    function setExpression(id) { mouthShape = id; }
+    function setExpression(id, animate, now) {
+      mouthShape = id;
+      mouthStart = animate && id === '24' ? now : null;
+      winkStart = animate && id === '23' ? now : null;
+    }
+    function winkOpening(now) {
+      // Static thumbnails show the named pose without any playback.
+      if (winkStart === null) return .025;
+      var age = now - winkStart;
+      if (age < 100 || age >= 490) return 1;
+      if (age < 220) return 1 - .975*(age-100)/120;
+      if (age < 320) return .025;
+      var t=(age-320)/170;
+      return .025 + .975*t*t*(3-2*t);
+    }
+    // A one-shot fabric bounce. The stitch overlay and tongue move with the mouth.
+    function mouthBounce(now) {
+      if (mouthStart === null) return 1;
+      var age = clamp(now - mouthStart, 0, 430);
+      if (age >= 430) { mouthStart = null; return 1; }
+      var keys = [[0, .72], [120, 1.16], [250, .97], [350, 1.013], [430, 1]];
+      for (var i = 1; i < keys.length; i++) {
+        if (age > keys[i][0]) continue;
+        var a = keys[i-1], b = keys[i], t = (age-a[0])/(b[0]-a[0]);
+        return a[1] + (b[1]-a[1])*t*t*(3-2*t);
+      }
+      return 1;
+    }
     // Center both embroidered features as one unit relative to the torso, not the tuft.
     function faceCenterOffsetY() {
       if (bodyId === 'night-seed') return -16;
@@ -1103,7 +1124,7 @@ window.EMOTION_SEED = [
         }
       });
     }
-    function renderMouth(pose, yaw, sketch) {
+    function renderMouth(pose, yaw, sketch, now) {
       renderAccent(yaw, sketch, plushProfiles[bodyId]);
       if ((!hasSeam && !/^(22|23|24|25|4[2-7])$/.test(mouthShape)) || Math.cos(yaw) <= 0.12 || sketch > 0.5) {
         show(mouth,false); show(mouthThread,false); show(tongue,false);
@@ -1127,7 +1148,12 @@ window.EMOTION_SEED = [
       var tx = HEAD_C + Math.sin(yaw) * 87 + (profile ? profile.mx : 0);
       var y = profile ? profile.my + faceCenterOffsetY() + (/^(cheer|gasp)$/.test(mode) ? 5 : 0) : 169;
       var scale = mode === 'bubuStar' ? .95 : mode === 'bubu' ? 1.05 : profile && mode === profile.mouth ? profile.ms : 1;
-      var transform = 'translate(' + r2(tx) + ' ' + y + ') scale(' + r2(Math.cos(yaw)*scale) + ' ' + scale + ')';
+      var bounce = mouthBounce(now);
+      // The carrot mouth is already large, so the vertical overshoot is slightly softer.
+      if (mode === 'bubu' && bounce > 1) bounce = 1 + (bounce - 1) * .7;
+      var scaleX = Math.cos(yaw)*scale*(1 + (bounce-1)*.14);
+      var scaleY = bounce === 1 ? scale : r2(scale*bounce);
+      var transform = 'translate(' + r2(tx) + ' ' + y + ') scale(' + r2(scaleX) + ' ' + scaleY + ')';
       mouth.setAttribute('d', d); mouth.setAttribute('stroke', color);
       mouth.setAttribute('stroke-width', hasSeam ? (wide ? 6.5 : 7.5) : 4.8);
       mouth.setAttribute('fill', wide ? color : 'none');
@@ -1447,6 +1473,12 @@ window.EMOTION_SEED = [
       }
 
       var yaw = b.yaw || 0;
+      if (mouthShape === '23') {
+        pose = Object.assign({}, pose, {
+          left: Object.assign({}, pose.left, {open: Math.max(.93, pose.left.open)*winkOpening(now)}),
+          right: Object.assign({}, pose.right, {open: Math.max(.93, pose.right.open)})
+        });
+      }
       setEye(eyeL, pose.left, 0, sketch, yaw);
       setEye(eyeR, pose.right, 1, sketch, yaw);
       renderPlush(pose, yaw, sketch);
@@ -1454,7 +1486,7 @@ window.EMOTION_SEED = [
         eyeL.node.style.display = 'none';
         eyeR.node.style.display = 'none';
       }
-      renderMouth(pose, yaw, sketch);
+      renderMouth(pose, yaw, sketch, now);
 
       if (lite) return;
 
@@ -2049,7 +2081,7 @@ window.EMOTION_SEED = [
       var prevId = this._def ? this._def.id : null;
       this._prevPose = this._lastPose ? clonePose(this._lastPose) : null;
       this._def = def;
-      this.ball.setExpression(def.id);
+      this.ball.setExpression(def.id, this._active === true, now);
       this._emoStart = now;
       this._transStart = now;
       this._transDur = this._prevPose ? def.transition : 0;
