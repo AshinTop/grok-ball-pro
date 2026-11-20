@@ -2,7 +2,15 @@
 
 一个可以放在浏览器里的迷你安可现场。用鼠标和表情球互动，在 **9 款球体 × 42 个表情**里自由搭配，再点「安可一下」让当前球转圈、撒彩纸。五位团员的球登场时，旁边还会亮起各自的演出道具。一个 HTML 即可离线运行，不需要安装应用、连接 AI 或登录。
 
+Grok Ball Pro 延续 TyCoding 的鼠标注视、SVG 表情与 Agent 状态接口，在经典眼环之外加入五月天同人舞台和七款毛绒造型。
+
 > **非官方同人项目**。角色是用 SVG 绘制的二次创作，不是官方周边，也不是五月天、相信音乐、STAYREAL 或 xAI 的合作项目。
+
+## 特性
+
+- **沿用原版表情引擎**：保留原有 25 组眼环几何和经典球面投影。移动鼠标，预览球与右下角小球会跟随注视；点击右下角小球可触发自旋与 3D 彩带。
+- **经典动画与同人造型并存**：逐点眼环形变、眨眼、呼吸、睡眠 zzz、任务完成撒花继续保留；Pro 可独立切换 9 款球体与 42 种表情。
+- **单 HTML 试玩、可嵌入业务**：内联 SVG 运行时无需安装，支持 JS、TypeScript 和 `emotionId`；官方登场曲是可选的联网内容。
 
 ## 🎛️ 怎样玩
 
@@ -26,68 +34,33 @@ HTTP(S) 网页可按需加载**可见的 YouTube 官方播放器**，默认不�
 
 ## 九款球体动态预览
 
-白球保留 fork 原 README 的完整动图，画面、节奏和尺寸均未修改。其他八款用同样的浅底卡片、中文表情名与 ID，按「待机放空 → 开心 → 惊讶 → 生气 → 思考中 → 任务完成」轮换，每个表情里保留自然动作。八款新录制动图里的球身横向均超过 200 px（按原文件像素计，不含头饰或标题）。点击图片可以按原尺寸查看；这里采用单列，不把图缩进三栏。
+白球沿用 fork 原 README 的完整动图，未裁剪、放大或抽帧。其他八款按「待机放空 → 开心 → 惊讶 → 生气 → 思考中 → 任务完成」轮换，每段保留眨眼和视线动作；球身在**原文件**中宽、高均超过 200 px（不含头饰）。下方两栏全部展开，点击任一动图可按原尺寸查看。
 
-### ⚪ 经典白球 · TyCoding 完整原版
+| ⚪ 经典白球（原版） | ⚫ 经典黑球 |
+| :---: | :---: |
+| [![⚪ 经典白球（原版） · 表情切换](./assets/promo/10-expression-switch.gif)](./assets/promo/10-expression-switch.gif) | [![⚫ 经典黑球 · 表情切换](./assets/pro-expressions/midnight.gif)](./assets/pro-expressions/midnight.gif) |
+| **🎙️ 阿信粉球** | **🎸 怪兽红球** |
+| [![🎙️ 阿信粉球 · 表情切换](./assets/pro-expressions/encore.gif)](./assets/pro-expressions/encore.gif) | [![🎸 怪兽红球 · 表情切换](./assets/pro-expressions/red.gif)](./assets/pro-expressions/red.gif) |
+| **🟡 玛莎黄球** | **🎸 石头绿球** |
+| [![🟡 玛莎黄球 · 表情切换](./assets/pro-expressions/sunshine.gif)](./assets/pro-expressions/sunshine.gif) | [![🎸 石头绿球 · 表情切换](./assets/pro-expressions/jade.gif)](./assets/pro-expressions/jade.gif) |
+| **🥁 冠佑眼镜蓝球** | **💙 蓝色梦想倔强卜卜** |
+| [![🥁 冠佑眼镜蓝球 · 表情切换](./assets/pro-expressions/backbeat.gif)](./assets/pro-expressions/backbeat.gif) | [![💙 蓝色梦想倔强卜卜 · 表情切换](./assets/pro-expressions/night-seed.gif)](./assets/pro-expressions/night-seed.gif) |
+| **🥕 胡萝卜卜卜** |  |
+| [![🥕 胡萝卜卜卜 · 表情切换](./assets/pro-expressions/sprout.gif)](./assets/pro-expressions/sprout.gif) |  |
 
-[![经典白球 · TyCoding 原版完整动图](./assets/promo/10-expression-switch.gif)](./assets/promo/10-expression-switch.gif)
+完整 42 种表情可在 [`index.html`](./index.html) 互动体验。
 
-### ⚫ 经典黑球
+## 经典版在线演示与示例
 
-[![经典黑球 · 原版眼环与表情轮换](./assets/pro-expressions/midnight.gif)](./assets/pro-expressions/midnight.gif)
+[试用原版 Grok Ball](https://tycoding.github.io/grok-ball/)。以下是 TyCoding 原版截图，不是 Pro 舞台界面。
 
-### 🎙️🎸🥁 五色成员球与两款卜卜
+![原版配置与预览界面](./assets/promo/01-overview.png)
 
-<details>
-<summary>🎙️ 阿信粉球</summary>
+| 情绪反应 | Agent 工作状态 |
+| :---: | :---: |
+| [![原版情绪反应：开心、惊讶、害羞与生气](./assets/promo/12-emotion-grid.png)](./assets/promo/12-emotion-grid.png) | [![原版 Agent 状态：思考中、任务完成与检索资料](./assets/promo/13-agent-grid.png)](./assets/promo/13-agent-grid.png) |
 
-[![阿信粉球 · 表情轮换](./assets/pro-expressions/encore.gif)](./assets/pro-expressions/encore.gif)
-
-</details>
-
-<details>
-<summary>🎸 怪兽红球</summary>
-
-[![怪兽红球 · 表情轮换](./assets/pro-expressions/red.gif)](./assets/pro-expressions/red.gif)
-
-</details>
-
-<details>
-<summary>🟡 玛莎黄球</summary>
-
-[![玛莎黄球 · 表情轮换](./assets/pro-expressions/sunshine.gif)](./assets/pro-expressions/sunshine.gif)
-
-</details>
-
-<details>
-<summary>🎸 石头绿球</summary>
-
-[![石头绿球 · 表情轮换](./assets/pro-expressions/jade.gif)](./assets/pro-expressions/jade.gif)
-
-</details>
-
-<details>
-<summary>🥁 冠佑眼镜蓝球</summary>
-
-[![冠佑眼镜蓝球 · 表情轮换](./assets/pro-expressions/backbeat.gif)](./assets/pro-expressions/backbeat.gif)
-
-</details>
-
-<details>
-<summary>💙 蓝色梦想倔强卜卜</summary>
-
-[![蓝色梦想倔强卜卜 · 表情轮换](./assets/pro-expressions/night-seed.gif)](./assets/pro-expressions/night-seed.gif)
-
-</details>
-
-<details>
-<summary>🥕 胡萝卜卜卜</summary>
-
-[![胡萝卜卜卜 · 表情轮换](./assets/pro-expressions/sprout.gif)](./assets/pro-expressions/sprout.gif)
-
-</details>
-
-完整 42 种表情仍可在 [`index.html`](./index.html) 互动体验。
+更多原版示例：[睡眠状态](./assets/promo/02-sleeping.png) · [思考环带](./assets/promo/07-thinking-orbit.png) · [任务完成](./assets/promo/08-task-done.png) · [表情切换 MP4](./assets/promo/11-expression-switch.mp4)。
 
 ## 🎤 认识五月天（Mayday）
 
@@ -136,6 +109,41 @@ ball.setGaze(0.5, -0.3); // 让球注视指定方向
 ```
 
 省略 `body` 沿用原版外观。`body` 决定主题；原有的 `shape` 决定球面几何。TypeScript 项目可用 [`src/grok-ball.ts`](./src/grok-ball.ts)，更完整的原有接入说明见 [SKILL.md](./SKILL.md)。
+
+### 原版 32 个表情 ID
+
+| 分组 | 表情 ID |
+| --- | --- |
+| 生命周期 | 00 睡眠 · 01 唤醒 · 02 待机放空 · 03 好奇 · 04 发呆 · 05 加载苏醒 · 06 休眠 · 07 抖动唤醒 |
+| 情绪反应 | 10 开心 · 11 疑惑 · 12 失落 · 13 惊讶 · 14 害羞 · 15 疲惫 · 16 专注 · 17 慌张 · 18 无奈 · 19 满意 · 20 困惑 · 21 生气 |
+| 代理工作状态 | 30 思考中 · 31 接收任务 · 32 处理中忙碌 · 33 任务完成 · 34 出错 · 35 等待输入 · 36 联网加载 · 37 复述回忆 · 38 拒绝/受限 · 39 输出回复 · 40 检索资料 · 41 停止终止 |
+
+### 目录结构
+
+```text
+index.html                  单文件试玩（内联引擎 + 舞台）
+src/grok-ball.js            SVG 引擎、表情配置与浏览器 SDK
+src/grok-ball.ts            TypeScript 接口与 Agent 消息类型
+scripts/build-inline.mjs    把引擎压缩并内联到 index.html
+scripts/test-grok-ball.mjs  表情、切换和舞台互动回归检查
+assets/promo/               上游原版截图、GIF 和 MP4
+assets/pro-expressions/     Pro 各球体动图
+AGENTS.md / SKILL.md        开发及接入指南
+LICENSE                     MIT 许可证
+```
+
+### 给 AI 助手的接入提示
+
+可复制下面这段给你的编程助手：
+
+```text
+请先阅读 https://github.com/AshinTop/grok-ball-pro 的 SKILL.md 和 AGENTS.md。
+用 GrokBall.create() 在我的项目接入表情球，根据已有 emotionId 切换状态。
+如需 Pro 的球体切换，请以 src/grok-ball.ts 的接口及当前 README 为准，
+保留表情状态与球体选择相互独立，并在组件卸载时调用 destroy()。
+```
+
+### 构建与验证
 
 ```bash
 node --check src/grok-ball.js
