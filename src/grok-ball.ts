@@ -9,12 +9,15 @@ import './grok-ball.js';
 export type BuiltInEmotionId =
   | '00' | '01' | '02' | '03' | '04' | '05' | '06' | '07'
   | '10' | '11' | '12' | '13' | '14' | '15' | '16' | '17'
-  | '18' | '19' | '20' | '21'
+  | '18' | '19' | '20' | '21' | '22' | '23' | '24' | '25'
   | '30' | '31' | '32' | '33' | '34' | '35' | '36' | '37'
-  | '38' | '39' | '40' | '41';
+  | '38' | '39' | '40' | '41'
+  | '42' | '43' | '44' | '45' | '46' | '47';
 
 export type EmotionId = BuiltInEmotionId | (string & {});
 export type EmotionGroupKey = 'life' | 'emotion' | 'agent' | 'custom';
+export type BallBodyId = 'classic' | 'midnight' | 'encore' | 'red' | 'sunshine' | 'jade' | 'backbeat' | 'night-seed' | 'sprout';
+export interface BallBody { readonly id: BallBodyId; readonly name: string; readonly en: string; readonly swatch: string; }
 export type BodyShape = 'blob' | 'wedge' | 'gem';
 
 export interface EmotionGroup {
@@ -40,6 +43,7 @@ export interface IdleOptions {
 
 export interface GrokBallCreateOptions {
   emotion?: EmotionId;
+  body?: BallBodyId;
   color?: `#${string}`;
   eyeColor?: `#${string}`;
   eyeScale?: number;
@@ -62,6 +66,8 @@ export type GrokBallEventHandler = (payload: unknown) => void;
 export interface GrokBallEngine {
   readonly emotionId: EmotionId | null;
   readonly touring: boolean;
+  readonly bodyId: BallBodyId;
+  setBody(id: BallBodyId): boolean;
   setEmotion(id: EmotionId, options?: { auto?: boolean }): boolean;
   handleAIMessage(message: AgentEmotionMessage | string): boolean;
   setGaze(nx: number, ny: number): this;
@@ -94,6 +100,7 @@ export interface GrokBallStatic {
   readonly version: string;
   readonly EMOTIONS: EmotionSummary[];
   readonly GROUPS: EmotionGroup[];
+  readonly BODIES: readonly BallBody[];
   readonly config: GrokBallConfigApi;
   create(target: string | Element, options?: GrokBallCreateOptions): GrokBallEngine;
 }
