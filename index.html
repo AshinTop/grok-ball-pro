@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Grok Ball Pro · AI 表情球</title>
+<title>Grok Ball Pro · 五月天同人舞台</title>
+<meta name="description" content="五月天非官方同人表情球：五色成员球、卜卜返场、9 款球体和 42 个表情。一个 HTML 即可离线试玩。">
 <style>
   :root {
     --ink: #111516;
@@ -180,6 +181,88 @@
     .preview-desc { max-width: 320px; }
     .ball { right: 12px; bottom: 12px; width: 46px; height: 46px; }
   }
+  /* Independent fan-stage artwork; no concert photos or remote assets. */
+  .top-actions { display: flex; align-items: center; gap: 9px; }
+  .stage-trigger, .stage-close {
+    min-height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid #748af5;
+    color: #eef1ff; background: #222c60; font-family: inherit;
+    font-size: 12px; font-weight: 650; cursor: pointer; white-space: nowrap;
+  }
+  .stage-trigger:hover, .stage-close:hover { background: #334486; }
+  .stage-trigger:focus-visible, .stage-close:focus-visible, .stage-member:focus-visible, .stage-encore:focus-visible,
+  .stage-notes a:focus-visible { outline: 2px solid #bfcaff; outline-offset: 3px; }
+  .preview {
+    border-color: #354477; background: #11172d;
+    background-image: radial-gradient(ellipse at 50% 48%, #2d3c75 0, #1d2753 33%, transparent 72%),
+      linear-gradient(165deg, #10152a 15%, #172145 72%, #0b1025);
+  }
+  .preview::before {
+    opacity: .7; mask-image: none;
+    background-image: radial-gradient(circle, #a5b4ff70 1px, transparent 1.5px),
+      radial-gradient(ellipse at 50% 75%, #7188e989, transparent 46%),
+      conic-gradient(from -25deg at 17% 4%, transparent 0deg 30deg, #a0b0ff20 34deg 52deg, transparent 54deg 360deg),
+      conic-gradient(from 175deg at 84% 8%, #839bf027 0deg 19deg, transparent 22deg 360deg);
+    background-size: 28px 28px, auto, auto, auto;
+    background-position: 8px 5px, center, center, center;
+  }
+  .preview::after { content: none; }
+  .stage-heading { text-align: center; z-index: 1; }
+  .stage-kicker { margin: 0 0 7px; color: #b9c5ff; font: 650 10px/1.3 ui-monospace, monospace; letter-spacing: .19em; }
+  .stage-heading h1 { margin: 0; color: #f4f2ff; font-size: clamp(20px, 3vw, 34px); line-height: 1.14; letter-spacing: .025em; }
+  .stage-lights { margin: 10px auto 0; display: flex; justify-content: center; gap: 7px; }
+  .stage-lights i { background: var(--light); color: var(--light); width: 6px; height: 6px; border-radius: 50%; box-shadow: 0 0 9px currentColor; }
+  .preview-ball { width: min(var(--ball-size, 300px), 43vw, max(140px, calc(100dvh - 360px))); }
+  .preview-name, .body-current { color: #eef1ff; }
+  .preview-id, .preview-desc { color: #bcc8f0; }
+  .body-current { background: #273661; }
+  .stage-encore { color: #e0e6ff; background: #202f62; border: 1px solid #5568ae; border-radius: 20px;
+    min-height: 36px; padding: 0 15px; font: inherit; font-size: 12px; cursor: pointer; }
+  .stage-encore:hover, .stage-encore:active { background: #35488b; }
+  .stage-notes {
+    width: min(690px, calc(100% - 24px)); max-height: min(86dvh, 760px); overflow: auto;
+    padding: clamp(17px, 4vw, 30px); background: #151e41; color: #eef1ff;
+    border: 1px solid #536299; border-radius: 18px; box-shadow: 0 30px 100px #050717;
+  }
+  .stage-notes::backdrop { background: #050717db; }
+  .stage-notes-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .stage-notes h2 { font-size: 24px; margin: 0; }
+  .stage-notes h3 { font-size: 15px; margin: 23px 0 10px; }
+  .stage-notes p { font-size: 13px; line-height: 1.75; color: #c9d2f2; }
+  .stage-members { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; }
+  .stage-member {
+    min-width: 0; min-height: 63px; padding: 7px 3px; text-align: center; border-radius: 9px;
+    background: #222d54; color: #f0f2ff; border: 1px solid #43527e; cursor: pointer; font: inherit;
+  }
+  .stage-member:hover, .stage-member[aria-pressed=true] { background: #314170; border-color: var(--light); }
+  .stage-member strong, .stage-member small { display: block; }
+  .stage-member strong { color: var(--light); font-size: 13px; }
+  .stage-member small { color: #c9d2f2; margin-top: 4px; font-size: 11px; }
+  .stage-tracks { padding: 0; margin: 0; list-style: none; display: grid; gap: 7px; }
+  .stage-tracks li { min-width: 0; }
+  .stage-tracks a { display: flex; justify-content: space-between; gap: 12px; align-items: center; min-height: 44px;
+    padding: 6px 10px; color: #eef1ff; background: #202b54; border-radius: 8px; text-decoration: none; }
+  .stage-tracks small { color: #c9d2f2; text-align: right; }
+  .stage-tracks a:hover { background: #314170; }
+  .stage-credit a { color: #c2ceff; text-underline-offset: .14em; }
+  .stage-credit { padding-top: 13px; border-top: 1px solid #384773; }
+  .stage-visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  @media (max-width: 900px) and (min-width: 721px) {
+    .preview-ball { width: min(var(--ball-size, 260px), 34vw, max(140px, calc(100dvh - 360px))); }
+  }
+  @media (max-height: 680px) and (min-width: 721px) {
+    .preview { padding: 16px 12px; gap: 8px; }
+    .stage-heading h1 { font-size: 22px; }
+    .stage-lights { margin-top: 7px; }
+  }
+  @media (max-width: 720px) {
+    .brand { font-size: 15px; gap: 8px; }
+    .brand-dot { width: 18px; height: 18px; flex: none; }
+    .top-actions { gap: 6px; }
+    .stage-trigger { padding: 0 8px; }
+    .preview { min-height: 340px; padding: 18px 12px; }
+    .preview-ball { width: min(var(--ball-size, 210px), 62vw); }
+    .stage-members { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
   }
@@ -192,12 +275,15 @@
       <span class="brand-dot" aria-hidden="true"></span>
       <span>Grok Ball Pro</span>
     </div>
-    <a class="github-link" href="https://github.com/AshinTop/grok-ball-pro" target="_blank" rel="noopener">
+    <div class="top-actions">
+    <button class="stage-trigger" id="stageOpen" type="button" aria-haspopup="dialog">五月天手册</button>
+    <a class="github-link" aria-label="Grok Ball Pro GitHub 仓库" href="https://github.com/AshinTop/grok-ball-pro" target="_blank" rel="noopener">
       <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true">
         <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
       </svg>
       <span>github.com/AshinTop/grok-ball-pro</span>
     </a>
+    </div>
   </header>
 
   <div class="ball" id="ball"></div>
@@ -228,13 +314,47 @@
     </aside>
 
     <section class="card preview">
+      <div class="stage-heading">
+        <p class="stage-kicker">MAYDAY · 非官方同人舞台</p>
+        <h1>五球的安可现场</h1>
+        <div class="stage-lights" aria-hidden="true">
+          <i style="--light:#ff98bd"></i><i style="--light:#ff898f"></i><i style="--light:#ffd571"></i>
+          <i style="--light:#99e8ab"></i><i style="--light:#9dc6ff"></i>
+        </div>
+      </div>
       <div class="preview-ball" id="previewBall"></div>
       <p class="preview-name" id="previewName">待机放空</p>
       <p class="preview-id" id="previewId">ID 02</p>
       <p class="body-current" id="previewBody">经典原版</p>
       <p class="preview-desc" id="previewDesc"></p>
+      <button class="stage-encore" id="stageEncore" type="button">✦ 安可一下</button>
+      <span class="stage-visually-hidden" id="stageLive" role="status"></span>
     </section>
   </main>
+
+  <dialog class="stage-notes" id="stageNotes" aria-labelledby="stageNotesTitle">
+    <div class="stage-notes-head">
+      <div><p class="stage-kicker">MAYDAY · FIELD NOTES</p><h2 id="stageNotesTitle">五月天手册</h2></div>
+      <form method="dialog"><button class="stage-close" type="submit" autofocus>关闭</button></form>
+    </div>
+    <p>五月天（Mayday）是来自台湾的五人摇滚乐团。1997 年走上台北野台开唱，1999 年发行首张创作专辑。从早期台语摇滚，到后来在演唱会里与观众一起合唱，他们把青春、友情与长大后继续坚持的故事写进音乐。</p>
+    <h3 id="stageLineupTitle">五位团员 · 点名上台</h3>
+    <div class="stage-members" id="stageMembers" role="group" aria-labelledby="stageLineupTitle">
+      <button type="button" class="stage-member" data-body="encore" style="--light:#ffadd0"><strong>阿信</strong><small>主唱</small></button>
+      <button type="button" class="stage-member" data-body="red" style="--light:#ff9da4"><strong>怪兽</strong><small>吉他</small></button>
+      <button type="button" class="stage-member" data-body="sunshine" style="--light:#ffda8a"><strong>玛莎</strong><small>贝斯</small></button>
+      <button type="button" class="stage-member" data-body="jade" style="--light:#abedac"><strong>石头</strong><small>吉他</small></button>
+      <button type="button" class="stage-member" data-body="backbeat" style="--light:#a9caff"><strong>冠佑</strong><small>鼓</small></button>
+    </div>
+    <p>五色成员球参考相信音乐 #5525 周边。蓝色梦想倔强卜卜与胡萝卜卜卜另外取材于 STAYREAL 的公仔，不对应乐团成员。</p>
+    <h3>三首入门 · 从出道听到《自传》</h3>
+    <ol class="stage-tracks">
+      <li><a href="https://www.youtube.com/watch?v=5VUUGZ1-nlY" target="_blank" rel="noopener noreferrer"><span>01 · 志明与春娇 ↗</span><small>滚石唱片 · 官方 MV</small></a></li>
+      <li><a href="https://www.youtube.com/watch?v=EZxVmhM6UpE" target="_blank" rel="noopener noreferrer"><span>02 · 突然好想你 ↗</span><small>相信音乐 · 官方现场</small></a></li>
+      <li><a href="https://www.youtube.com/watch?v=LQ2s10P5i08" target="_blank" rel="noopener noreferrer"><span>03 · 转眼 ↗</span><small>相信音乐 · 官方 MV</small></a></li>
+    </ol>
+    <p class="stage-credit"><a href="https://bin-music.com/artist/MAYDAY" target="_blank" rel="noopener noreferrer">相信音乐 · 五月天官方艺人页 ↗</a><br>非官方同人作品，与五月天、相信音乐、STAYREAL 或 xAI 无隶属或代言关系。试听为外链，页面不加载歌曲、官方图片或商标图形。</p>
+  </dialog>
 
   <script data-grok-ball-engine>
 /*! Grok Ball standalone engine | MIT License */
@@ -260,6 +380,11 @@ window.EB_RINGS={HEAD_C:114.2705,EYE_HALF:21,STAR_GOLD:"#f4c34e",EXPRESSIONS:[[[
     var colorMode = document.getElementById('colorMode');
     var colorInput = document.getElementById('colorInput');
     var sizeRange = document.getElementById('sizeRange');
+    var stageNotes = document.getElementById('stageNotes');
+    var stageOpen = document.getElementById('stageOpen');
+    var stageMembers = document.getElementById('stageMembers').querySelectorAll('.stage-member');
+    var stageEncore = document.getElementById('stageEncore');
+    var stageLive = document.getElementById('stageLive');
 
     var STORAGE_KEY = 'grok-ball-pro.selection.v1';
     var saved = {};
@@ -287,6 +412,9 @@ window.EB_RINGS={HEAD_C:114.2705,EYE_HALF:21,STAR_GOLD:"#f4c34e",EXPRESSIONS:[[[
       bodyControlsEl.querySelectorAll('.body-card').forEach(function (card) {
         card.setAttribute('aria-pressed', String(card.dataset.body === body.id));
       });
+      stageMembers.forEach(function (card) {
+        card.setAttribute('aria-pressed', String(card.dataset.body === body.id));
+      });
       bodyNameEl.textContent = body.name;
       if (engine) engine.setBody(body.id);
       thumbs.forEach(function (preview) { preview.setBody(body.id); });
@@ -307,6 +435,24 @@ window.EB_RINGS={HEAD_C:114.2705,EYE_HALF:21,STAR_GOLD:"#f4c34e",EXPRESSIONS:[[[
       bodyControlsEl.appendChild(card);
       GrokBall.create(icon, { body: body.id, emotion: '02', autostart: false, eyeScale: 1.16 });
       card.addEventListener('click', function () { selectBody(body); });
+    });
+
+    stageOpen.addEventListener('click', function () {
+      if (!stageNotes.open) stageNotes.showModal();
+    });
+    stageNotes.addEventListener('close', function () { stageOpen.focus(); });
+    stageMembers.forEach(function (card) {
+      card.addEventListener('click', function () {
+        var body = BODIES.find(function (item) { return item.id === card.dataset.body; });
+        if (!body) return;
+        selectBody(body);
+        stageNotes.close();
+      });
+    });
+    stageEncore.addEventListener('click', function () {
+      if (!engine) return;
+      stageLive.textContent = '安可！当前登场：' + currentBody.name;
+      if (!motionQuery.matches) { engine.spin(1); engine.burst(20); }
     });
 
     cornerEngine = GrokBall.create(cornerEl, { emotion: '02', body: 'midnight', autostart: !motionQuery.matches });

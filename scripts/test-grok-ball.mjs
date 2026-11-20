@@ -23,21 +23,29 @@ class Element {
   addEventListener(name, fn) {
     this.handlers.set(name, [...(this.handlers.get(name) || []), fn]);
   }
+  showModal() { this.open = true; }
+  close() { this.open = false; this.fire('close'); }
+  focus() { this.focused = true; }
   fire(name, evt = {}) { (this.handlers.get(name) || []).forEach(fn => fn(evt)); }
   querySelectorAll(q) {
     const matches = q.startsWith('.') ? n => n.className.split(' ').includes(q.slice(1)) : n => n.tag === q;
     return this.children.flatMap(n => [...(matches(n) ? [n] : []), ...n.querySelectorAll(q)]);
   }
 }
-function harness(saved, withStorage = true) {
+function harness(saved, withStorage = true, reducedMotion = false) {
   const nodes = Object.fromEntries(['bodyControls', 'previewBody', 'controls', 'previewBall', 'ball', 'previewName',
-    'previewId', 'previewDesc', 'colorMode', 'colorInput', 'sizeRange'].map(id => [id, new Element()]));
+    'previewId', 'previewDesc', 'colorMode', 'colorInput', 'sizeRange', 'stageNotes', 'stageOpen', 'stageMembers', 'stageEncore', 'stageLive'].map(id => [id, new Element()]));
+  for (const match of html.matchAll(/class="stage-member" data-body="([^"]+)"/g)) {
+    const button = new Element('button');
+    button.className = 'stage-member'; button.dataset.body = match[1];
+    nodes.stageMembers.appendChild(button);
+  }
   nodes.colorMode.value = 'auto'; nodes.colorInput.value = '#1a1a1a'; nodes.sizeRange.value = '260';
   const storage = new Map(saved || []);
   let now = 100, nextId = 1;
   const frames = new Map();
   const win = new Element('window');
-  win.matchMedia = () => ({ matches: false });
+  win.matchMedia = () => ({ matches: reducedMotion });
   const document = new Element('document');
   document.getElementById = id => nodes[id];
   document.querySelector = q => q.startsWith('#') ? nodes[q.slice(1)] : null;
@@ -62,6 +70,13 @@ const source = fs.readFileSync(new URL('../src/grok-ball.js', import.meta.url),'
 const html = fs.readFileSync(new URL('../index.html', import.meta.url),'utf8');
 const scripts = [...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(x => x[1]);
 assert.equal(scripts.length, 2);
+assert.doesNotMatch(html, /<(?:script|iframe|audio|video|link|img)\b[^>]*(?:src|href)=["']https?:/i);
+assert.deepEqual(Array.from(html.matchAll(/class="stage-member" data-body="([^"]+)"/g), m => m[1]),
+  ['encore','red','sunshine','jade','backbeat']);
+for (const track of ['5VUUGZ1-nlY', 'EZxVmhM6UpE', 'LQ2s10P5i08']) {
+  assert.ok(html.includes('https://www.youtube.com/watch?v=' + track + '" target="_blank" rel="noopener noreferrer"'));
+}
+assert.match(html, /<dialog [^>]*id="stageNotes"[\s\S]+?<form method="dialog">/);
 const legend = [
   '00','01','02','03','04','05','06','07','10','11','12','13','14','15','16','17','18','19','20','21',
   '30','31','32','33','34','35','36','37','38','39','40','41'
@@ -187,4 +202,36 @@ const privateTab = harness(undefined, false);
 scripts.forEach(code => vm.runInContext(code, privateTab.sandbox));
 assert.equal(privateTab.nodes.previewId.textContent, 'ID 02');
 assert.equal(privateTab.nodes.previewBall.children[0].getAttribute('data-grok-body'), 'classic');
-console.log('PASS: source and inline SDK, all 378 presets, legacy IDs/AI, live switches, selection/persistence, private mode');
+for (const reduced of [false, true]) {
+  const stage = harness(undefined, true, reduced);
+  vm.runInContext(scripts[0], stage.sandbox);
+  const api = stage.win.GrokBall;
+  const calls = [];
+  stage.win.GrokBall = {...api, create(target, options) {
+    const engine = api.create(target, options);
+    if (target === stage.nodes.previewBall) {
+      const spin = engine.spin.bind(engine), burst = engine.burst.bind(engine);
+      engine.spin = (count) => { calls.push(['spin', count]); return spin(count); };
+      engine.burst = (count) => { calls.push(['burst', count]); return burst(count); };
+    }
+    return engine;
+  }};
+  vm.runInContext(scripts[1], stage.sandbox);
+  const {stageNotes, stageOpen, stageMembers, stageEncore, stageLive, previewBall, previewId, controls} = stage.nodes;
+  controls.querySelectorAll('.emo-card').find(card => card.dataset.id === '25').fire('click');
+  for (const member of stageMembers.children) {
+    stageOpen.fire('click'); assert.equal(stageNotes.open, true);
+    stageOpen.focused = false;
+    member.fire('click'); assert.equal(stageNotes.open, false); assert.equal(stageOpen.focused, true);
+    assert.equal(previewBall.children[0].getAttribute('data-grok-body'), member.dataset.body);
+    assert.equal(previewId.textContent, 'ID 25');
+    assert.equal(stageMembers.children.filter(node => node.getAttribute('aria-pressed') === 'true').length, 1);
+    assert.equal(member.getAttribute('aria-pressed'), 'true');
+  }
+  stageEncore.fire('click');
+  assert.match(stageLive.textContent, /冠佑眼镜蓝球/);
+  assert.deepEqual(calls, reduced ? [] : [['spin', 1], ['burst', 20]]);
+  assert.equal(previewBall.children[0].getAttribute('data-grok-body'), 'backbeat');
+  assert.equal(previewId.textContent, 'ID 25');
+}
+console.log('PASS: source and inline SDK, all 378 presets, legacy IDs/AI, live switches, selection/persistence, private mode, five-member dialog, encore and reduced motion');
