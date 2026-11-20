@@ -34,8 +34,10 @@
   }
   * { box-sizing: border-box; }
 
+  :root { --corner-right: 30px; --corner-bottom: 28px; --corner-size: 74px; }
   .ball {
-    position: fixed; right: 30px; bottom: 28px; width: 74px; height: 74px;
+    position: fixed; right: var(--corner-right); bottom: var(--corner-bottom);
+    width: var(--corner-size); height: var(--corner-size);
     cursor: pointer; filter: drop-shadow(0 12px 22px rgba(0,0,0,.42)); z-index: 20;
     transition: filter .18s var(--ease-out), transform .18s var(--ease-out);
   }
@@ -179,7 +181,7 @@
     .preview::after { top: 18px; right: 18px; }
     .preview-ball { width: min(var(--ball-size, 210px), 62vw); }
     .preview-desc { max-width: 320px; }
-    .ball { right: 12px; bottom: 12px; width: 46px; height: 46px; }
+    :root { --corner-right: 12px; --corner-bottom: 12px; --corner-size: 46px; }
   }
   /* Independent fan-stage artwork; no concert photos or remote assets. */
   .top-actions { display: flex; align-items: center; gap: 9px; }
@@ -211,19 +213,6 @@
   .stage-heading h1 { margin: 0; color: #f4f2ff; font-size: clamp(20px, 3vw, 34px); line-height: 1.14; letter-spacing: .025em; }
   .stage-lights { margin: 10px auto 0; display: flex; justify-content: center; gap: 7px; }
   .stage-lights i { background: var(--light); color: var(--light); width: 6px; height: 6px; border-radius: 50%; box-shadow: 0 0 9px currentColor; }
-  .stage-game { margin: 11px auto 0; display: grid; justify-items: center; gap: 4px; }
-  .stage-game-link {
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    min-height: 44px; padding: 7px 17px; border: 1px solid #ffeabb; border-radius: 12px;
-    color: #2b2134; background: #ffdf8a; font-size: 15px; font-weight: 760;
-    text-decoration: none; box-shadow: 0 4px 14px #070a1d50; white-space: nowrap;
-  }
-  .stage-game-link:hover { background: #ffebad; }
-  .stage-game-link:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
-  .stage-game p { margin: 0; font-size: 12px; line-height: 1.4; color: #e3e8ff; }
-  @media (max-height: 680px) and (min-width: 721px) {
-    .stage-game { margin-top: 7px; gap: 2px; }
-  }
   .preview-ball { width: min(var(--ball-size, 300px), 43vw, max(140px, calc(100dvh - 360px))); }
   .stage-performance { position: relative; flex: none; }
   .stage-prop {
@@ -348,9 +337,9 @@
     .stage-notes-head h2 { font-size: clamp(17px, 5vw, 22px); overflow-wrap: anywhere; }
     .stage-close { flex: none; }
     .stage-music-go, .stage-music-load { min-height: 44px; }
-    .ball {
-      right: max(10px, env(safe-area-inset-right)); bottom: max(10px, env(safe-area-inset-bottom));
-      width: 46px; height: 46px;
+    :root {
+      --corner-right: max(10px, env(safe-area-inset-right)); --corner-bottom: max(10px, env(safe-area-inset-bottom));
+      --corner-size: 46px;
     }
   }
   @media (max-width: 720px) {
@@ -380,6 +369,49 @@
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
   }
+  .corner-game {
+    position: fixed; right: var(--corner-right); bottom: calc(var(--corner-bottom) + var(--corner-size) + 9px);
+    z-index: 21; display: inline-flex; justify-content: center; align-items: center; gap: 5px;
+    min-height: 44px; padding: 0 12px; border: 1px solid #fff0ba; border-radius: 15px;
+    background: #ffdf8a; color: #291b34; font-size: 13px; font-weight: 750;
+    text-decoration: none; white-space: nowrap; box-shadow: 0 5px 17px #07091b66;
+  }
+  .corner-game:hover { background: #fff0ba; }
+  .corner-game:focus-visible, .encore-banner a:focus-visible, .encore-banner button:focus-visible { outline: 2px solid #fff0ba; outline-offset: 3px; }
+  .encore-banner { flex: none; width: 100%; max-width: 1440px; margin-inline: auto; padding: 0 30px 10px; }
+  .encore-banner[hidden] { display: none; }
+  .encore-banner-inner {
+    position: relative; display: flex; align-items: stretch; gap: 6px; padding: 5px 7px 5px 5px;
+    background: radial-gradient(ellipse at 75% 0%, #64478c 0, transparent 66%), linear-gradient(106deg,#242333,#2c1948);
+    border: 1px solid #7263a6; border-radius: 16px;
+  }
+  .encore-banner a {
+    flex: 1; min-width: 0; min-height: 70px; display: flex; align-items: center; gap: 15px;
+    padding: 6px 12px; border-radius: 12px; color: #fff6dc; text-decoration: none;
+  }
+  .encore-banner a:hover { background: #ffffff10; }
+  .encore-banner strong { display: block; font-size: clamp(16px, 2vw, 23px); line-height: 1.15; }
+  .encore-banner small { display: block; color: #eee2ff; font-size: 12px; line-height: 1.3; margin-top: 4px; }
+  .encore-banner-cta { margin-left: auto; padding: 7px 11px; border-radius: 9px; color: #291b34; background: #ffdf8a; white-space: nowrap; font-weight: 750; font-size: 12px; }
+  .encore-banner-orbs { display: flex; flex: none; align-items: center; gap: 4px; }
+  .encore-banner-orbs i {
+    width: clamp(13px, 2.8vw, 29px); aspect-ratio: 1; border-radius: 50%;
+    background: radial-gradient(circle at 32% 27%, #fff9, transparent 55%), var(--orb);
+    box-shadow: 0 0 9px color-mix(in srgb, var(--orb) 60%, transparent);
+  }
+  .encore-banner-close {
+    flex: none; align-self: center; display: grid; place-items: center;
+    min-width: 44px; min-height: 44px; font-size: 23px; line-height: 1;
+    color: #fff5e5; background: #ffffff12; border: 1px solid #ffffff37; border-radius: 10px; cursor: pointer;
+  }
+  .encore-banner-close:hover { background: #ffffff28; }
+  @media (max-width: 720px), (max-width: 1024px) and (max-height: 540px) {
+    .encore-banner { padding-inline: max(10px, env(safe-area-inset-left)) max(10px, env(safe-area-inset-right)); padding-bottom: 7px; }
+    .encore-banner a { gap: 8px; min-height: 59px; padding-inline: 7px; }
+    .encore-banner small { font-size: 11px; }
+    .encore-banner-cta { padding-inline: 7px; }
+  }
+  @media (max-width: 410px) { .encore-banner-orbs { display: none; } }
 </style>
 </head>
 <body>
@@ -399,8 +431,31 @@
     </a>
     </div>
   </header>
+  <aside class="encore-banner" id="encoreBanner" aria-label="五球安可宣传">
+    <div class="encore-banner-inner">
+      <a href="./encore/index.html">
+        <span class="encore-banner-orbs" aria-hidden="true"><i style="--orb:#78c6fa"></i><i style="--orb:#f5cf72"></i><i style="--orb:#f795a4"></i><i style="--orb:#a1dc9a"></i><i style="--orb:#eaa6d0"></i></span>
+        <span><strong>五球安可</strong><small>拖球组乐队 · 非官方非商用 Demo</small></span>
+        <span class="encore-banner-cta">去试玩 ›</span>
+      </a>
+      <button type="button" class="encore-banner-close" id="encoreBannerClose" aria-label="关闭五球安可横幅">×</button>
+    </div>
+  </aside>
 
+  <a class="corner-game" id="cornerGame" href="./encore/index.html" aria-label="玩一玩：五球安可">🎸 玩一玩</a>
   <div class="ball" id="ball"></div>
+  <script>
+  (function () {
+    var banner = document.getElementById('encoreBanner');
+    var key = 'grok-ball-pro.encore-banner.dismissed.v1';
+    try { if (localStorage.getItem(key) === '1') banner.hidden = true; } catch (_) {}
+    document.getElementById('encoreBannerClose').addEventListener('click', function () {
+      banner.hidden = true;
+      try { localStorage.setItem(key, '1'); } catch (_) {}
+      document.getElementById('cornerGame').focus({ preventScroll: true });
+    });
+  }());
+  </script>
 
   <main class="panel">
     <aside class="card controls">
@@ -434,10 +489,6 @@
         <div class="stage-lights" aria-hidden="true">
           <i style="--light:#ff98bd"></i><i style="--light:#ff898f"></i><i style="--light:#ffd571"></i>
           <i style="--light:#99e8ab"></i><i style="--light:#9dc6ff"></i>
-        </div>
-        <div class="stage-game">
-          <a class="stage-game-link" href="./encore/index.html"><span aria-hidden="true">🎸</span>玩五球安可<span aria-hidden="true">›</span></a>
-          <p>拖球上台，组一支五人乐队</p>
         </div>
       </div>
       <div class="stage-performance">
