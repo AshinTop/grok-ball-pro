@@ -26,24 +26,68 @@ HTTP(S) 网页可按需加载**可见的 YouTube 官方播放器**，默认不�
 
 ## 九款球体动态预览
 
-九款动图都用「一个表情停一拍，再切下一个」的剪辑：待机放空 → 开心 → 惊讶 → 生气 → 思考中 → 任务完成。
+白球保留 fork 原 README 的完整动图，画面、节奏和尺寸均未修改。其他八款用同样的浅底卡片、中文表情名与 ID，按「待机放空 → 开心 → 惊讶 → 生气 → 思考中 → 任务完成」轮换，每个表情里保留自然动作。八款新录制动图里的球身横向均超过 200 px（按原文件像素计，不含头饰或标题）。点击图片可以按原尺寸查看；这里采用单列，不把图缩进三栏。
 
-- **经典原版**取自 [TyCoding 原版动图](./assets/promo/10-expression-switch.gif)的正脸帧，保留原始眼环、球身比例与配色。**经典黑球**使用上游引擎和黑球、白眼配色重录。
-- **七款毛绒球**使用 Pro 引擎的定格表情，保留各自的配色和配件。每张动图都有独立的表情名和 ID。
+### ⚪ 经典白球 · TyCoding 完整原版
 
-点击动图可单独查看或保存；完整 42 种表情仍可在 [`index.html`](./index.html) 互动体验。
+[![经典白球 · TyCoding 原版完整动图](./assets/promo/10-expression-switch.gif)](./assets/promo/10-expression-switch.gif)
 
-| ⚪ 经典原版 | ⚫ 经典黑球 | 🎙️ 阿信粉球 |
-| :---: | :---: | :---: |
-| [![经典原版 · 表情切换](./assets/pro-expressions/classic.gif)](./assets/pro-expressions/classic.gif) | [![经典黑球 · 表情切换](./assets/pro-expressions/midnight.gif)](./assets/pro-expressions/midnight.gif) | [![阿信粉球 · 表情切换](./assets/pro-expressions/encore.gif)](./assets/pro-expressions/encore.gif) |
+### ⚫ 经典黑球
 
-| 🎸 怪兽红球 | 🟡 玛莎黄球 | 🎸 石头绿球 |
-| :---: | :---: | :---: |
-| [![怪兽红球 · 表情切换](./assets/pro-expressions/red.gif)](./assets/pro-expressions/red.gif) | [![玛莎黄球 · 表情切换](./assets/pro-expressions/sunshine.gif)](./assets/pro-expressions/sunshine.gif) | [![石头绿球 · 表情切换](./assets/pro-expressions/jade.gif)](./assets/pro-expressions/jade.gif) |
+[![经典黑球 · 原版眼环与表情轮换](./assets/pro-expressions/midnight.gif)](./assets/pro-expressions/midnight.gif)
 
-| 🥁 冠佑眼镜蓝球 | 💙 蓝色梦想倔强卜卜 | 🥕 胡萝卜卜卜 |
-| :---: | :---: | :---: |
-| [![冠佑眼镜蓝球 · 表情切换](./assets/pro-expressions/backbeat.gif)](./assets/pro-expressions/backbeat.gif) | [![蓝色梦想倔强卜卜 · 表情切换](./assets/pro-expressions/night-seed.gif)](./assets/pro-expressions/night-seed.gif) | [![胡萝卜卜卜 · 表情切换](./assets/pro-expressions/sprout.gif)](./assets/pro-expressions/sprout.gif) |
+### 🎙️🎸🥁 五色成员球与两款卜卜
+
+<details>
+<summary>🎙️ 阿信粉球</summary>
+
+[![阿信粉球 · 表情轮换](./assets/pro-expressions/encore.gif)](./assets/pro-expressions/encore.gif)
+
+</details>
+
+<details>
+<summary>🎸 怪兽红球</summary>
+
+[![怪兽红球 · 表情轮换](./assets/pro-expressions/red.gif)](./assets/pro-expressions/red.gif)
+
+</details>
+
+<details>
+<summary>🟡 玛莎黄球</summary>
+
+[![玛莎黄球 · 表情轮换](./assets/pro-expressions/sunshine.gif)](./assets/pro-expressions/sunshine.gif)
+
+</details>
+
+<details>
+<summary>🎸 石头绿球</summary>
+
+[![石头绿球 · 表情轮换](./assets/pro-expressions/jade.gif)](./assets/pro-expressions/jade.gif)
+
+</details>
+
+<details>
+<summary>🥁 冠佑眼镜蓝球</summary>
+
+[![冠佑眼镜蓝球 · 表情轮换](./assets/pro-expressions/backbeat.gif)](./assets/pro-expressions/backbeat.gif)
+
+</details>
+
+<details>
+<summary>💙 蓝色梦想倔强卜卜</summary>
+
+[![蓝色梦想倔强卜卜 · 表情轮换](./assets/pro-expressions/night-seed.gif)](./assets/pro-expressions/night-seed.gif)
+
+</details>
+
+<details>
+<summary>🥕 胡萝卜卜卜</summary>
+
+[![胡萝卜卜卜 · 表情轮换](./assets/pro-expressions/sprout.gif)](./assets/pro-expressions/sprout.gif)
+
+</details>
+
+完整 42 种表情仍可在 [`index.html`](./index.html) 互动体验。
 
 ## 🎤 认识五月天（Mayday）
 
