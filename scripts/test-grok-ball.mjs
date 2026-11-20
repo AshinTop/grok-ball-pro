@@ -23,6 +23,7 @@ class Element {
   addEventListener(name, fn) {
     this.handlers.set(name, [...(this.handlers.get(name) || []), fn]);
   }
+  get firstChild() { return this.children[0] ?? null; }
   showModal() { this.open = true; }
   close() { this.open = false; this.fire('close'); }
   focus() { this.focused = true; }
@@ -32,9 +33,9 @@ class Element {
     return this.children.flatMap(n => [...(matches(n) ? [n] : []), ...n.querySelectorAll(q)]);
   }
 }
-function harness(saved, withStorage = true, reducedMotion = false) {
+function harness(saved, withStorage = true, reducedMotion = false, protocol = 'file:') {
   const nodes = Object.fromEntries(['bodyControls', 'previewBody', 'controls', 'previewBall', 'ball', 'previewName',
-    'previewId', 'previewDesc', 'colorMode', 'colorInput', 'sizeRange', 'stageNotes', 'stageOpen', 'stageMembers', 'stageEncore', 'stageLive', 'stageProp', 'stagePropUse', 'stageRole'].map(id => [id, new Element()]));
+    'previewId', 'previewDesc', 'colorMode', 'colorInput', 'sizeRange', 'stageNotes', 'stageOpen', 'stageMembers', 'stageEncore', 'stageLive', 'stageProp', 'stagePropUse', 'stageRole', 'stageMusic', 'stageMusicOpen', 'stageMusicLoad', 'stageMusicLink', 'stageMusicTitle', 'stageTrackCopy', 'stageMusicInfo', 'stagePlayer'].map(id => [id, new Element()]));
   for (const match of html.matchAll(/class="stage-member" data-body="([^"]+)"/g)) {
     const button = new Element('button');
     button.className = 'stage-member'; button.dataset.body = match[1];
@@ -46,6 +47,7 @@ function harness(saved, withStorage = true, reducedMotion = false) {
   const frames = new Map();
   const win = new Element('window');
   win.matchMedia = () => ({ matches: reducedMotion });
+  win.location = { protocol };
   const document = new Element('document');
   document.getElementById = id => nodes[id];
   document.querySelector = q => q.startsWith('#') ? nodes[q.slice(1)] : null;
@@ -298,4 +300,34 @@ for (const reduced of [false, true]) {
   stage.nodes.bodyControls.querySelectorAll('.body-card').find(card=>card.dataset.body==='sprout').fire('click');
   assert.equal(stageProp.hidden,true);assert.equal(stageRole.hidden,true);assert.equal(stagePropUse.getAttribute('href'),null);
 }
-console.log('PASS: source and inline SDK, all 378 presets, legacy IDs/AI, live switches, selection/persistence, private mode, five instruments, encore and reduced motion, Wow mouth and balanced Peek eyes');
+for (const protocol of ['file:', 'https:']) {
+  const audio=harness(undefined,true,false,protocol), {nodes,document}=audio;
+  scripts.forEach(code=>vm.runInContext(code,audio.sandbox));
+  const loaded=nodes.stagePlayer, dialog=nodes.stageMusic, load=nodes.stageMusicLoad;
+  assert.equal(nodes.stageMusicOpen.hidden,true);assert.equal(loaded.children.length,0);
+  const tracks=[['encore','qX2GsMj7154','干杯'],['red','srP_Fm7f-eg','九号球'],
+    ['sunshine','V46K7apDziA','诺亚方舟'],['jade','uzVdsZbYibQ','如烟'],['backbeat','03-ge__OaIU','夜访吸血鬼']];
+  for (const [id,yt,title] of tracks) {
+    nodes.bodyControls.querySelectorAll('.body-card').find(card=>card.dataset.body===id).fire('click');
+    assert.equal(nodes.stageMusicOpen.hidden,false);
+    assert.equal(nodes.stageMusicLink.getAttribute('href'),'https://www.youtube.com/watch?v='+yt);
+    assert.ok(nodes.stageMusicTitle.textContent.includes(title));
+    nodes.stageMusicOpen.fire('click');assert.equal(dialog.open,true);
+    assert.equal(loaded.children.length,0,'opening song chooser never connects');
+    load.fire('click');load.fire('click');
+    if (protocol==='file:') {
+      assert.equal(load.hidden,true);assert.equal(loaded.children.length,0);
+    } else {
+      assert.equal(loaded.children.length,1,'single visible official player');
+      assert.equal(loaded.firstChild.getAttribute('src'),'https://www.youtube-nocookie.com/embed/'+yt+'?playsinline=1');
+      assert.equal(loaded.firstChild.getAttribute('referrerpolicy'),'strict-origin-when-cross-origin');
+      assert.equal(load.hidden,true);
+      document.hidden=true;document.fire('visibilitychange');
+      assert.equal(loaded.children.length,0,'tab hidden stops playback');
+      document.hidden=false;
+      load.fire('click');assert.equal(loaded.children.length,1);
+    }
+    dialog.close();assert.equal(loaded.children.length,0);assert.equal(nodes.stageMusicOpen.focused,true);
+  }
+}
+console.log('PASS: source and inline SDK, all 378 presets, legacy IDs/AI, live switches, selection/persistence, private mode, five instruments, encore and reduced motion, Wow mouth, balanced expressions, a genuine wink, and opt-in official tracks');

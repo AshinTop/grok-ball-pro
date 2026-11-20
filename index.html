@@ -218,6 +218,19 @@
     width: clamp(58px, 36%, 110px); right: -24%; bottom: 1%;
     filter: drop-shadow(0 8px 7px #050716b8);
   }
+  .stage-music-trigger, .stage-music-go, .stage-music-load {
+    min-height: 36px; color: #eef1ff; background: #23336b; border: 1px solid #6274b5;
+    border-radius: 9px; font: inherit; font-size: 12px; cursor: pointer; padding: 6px 11px;
+  }
+  .stage-music-trigger:hover, .stage-music-go:hover, .stage-music-load:hover { background: #344988; }
+  .stage-music-trigger:focus-visible, .stage-music-go:focus-visible, .stage-music-load:focus-visible {
+    outline: 2px solid #bdc9ff; outline-offset: 3px;
+  }
+  .stage-music { width: min(568px, calc(100% - 24px)); }
+  .stage-music-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .stage-music-go { display: inline-flex; align-items: center; text-decoration: none; }
+  .stage-player:not(:empty) { margin-top: 14px; }
+  .stage-player iframe { display: block; width: 100%; min-height: 200px; aspect-ratio: 16 / 9; border: 0; background: #060914; }
   .stage-prop svg { display: block; width: 100%; overflow: visible; }
   .stage-prop-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
   .stage-identity { display: flex; justify-content: center; flex-wrap: wrap; gap: 5px; }
@@ -349,7 +362,10 @@
         <p class="stage-role" id="stageRole" hidden></p>
       </div>
       <p class="preview-desc" id="previewDesc"></p>
-      <button class="stage-encore" id="stageEncore" type="button">✦ 安可一下</button>
+      <div class="stage-identity">
+        <button class="stage-encore" id="stageEncore" type="button">✦ 安可一下</button>
+        <button class="stage-music-trigger" id="stageMusicOpen" type="button" aria-haspopup="dialog" hidden>♪ 登场曲</button>
+      </div>
       <span class="stage-visually-hidden" id="stageLive" role="status"></span>
     </section>
   </main>
@@ -431,7 +447,21 @@
       <li><a href="https://www.youtube.com/watch?v=EZxVmhM6UpE" target="_blank" rel="noopener noreferrer"><span>02 · 突然好想你 ↗</span><small>相信音乐 · 官方现场</small></a></li>
       <li><a href="https://www.youtube.com/watch?v=LQ2s10P5i08" target="_blank" rel="noopener noreferrer"><span>03 · 转眼 ↗</span><small>相信音乐 · 官方 MV</small></a></li>
     </ol>
-    <p class="stage-credit"><a href="https://bin-music.com/artist/MAYDAY" target="_blank" rel="noopener noreferrer">相信音乐 · 五月天官方艺人页 ↗</a><br>非官方同人作品，与五月天、相信音乐、STAYREAL 或 xAI 无隶属或代言关系。试听为外链，页面不加载歌曲、官方图片或商标图形。</p>
+    <p class="stage-credit"><a href="https://bin-music.com/artist/MAYDAY" target="_blank" rel="noopener noreferrer">相信音乐 · 五月天官方艺人页 ↗</a><br>非官方同人作品，与五月天、相信音乐、STAYREAL 或 xAI 无隶属或代言关系。不打包音乐、官方图片或商标图形；登场曲只通过用户主动选择的官方服务播放。</p>
+  </dialog>
+
+  <dialog class="stage-notes stage-music" id="stageMusic" aria-labelledby="stageMusicTitle">
+    <div class="stage-notes-head">
+      <div><p class="stage-kicker">MAYDAY · ENTRANCE TRACK</p><h2 id="stageMusicTitle">登场曲</h2></div>
+      <form method="dialog"><button class="stage-close" type="submit" autofocus>关闭</button></form>
+    </div>
+    <p id="stageTrackCopy"></p>
+    <div class="stage-music-controls">
+      <button class="stage-music-load" id="stageMusicLoad" type="button" hidden>加载官方播放器</button>
+      <a class="stage-music-go" id="stageMusicLink" target="_blank" rel="noopener noreferrer">打开官方视频 ↗</a>
+    </div>
+    <div class="stage-player" id="stagePlayer"></div>
+    <p id="stageMusicInfo"></p>
   </dialog>
 
   <script data-grok-ball-engine>
@@ -466,6 +496,43 @@ window.EB_RINGS={HEAD_C:114.2705,EYE_HALF:21,STAR_GOLD:"#f4c34e",EXPRESSIONS:[[[
     var stageProp = document.getElementById('stageProp');
     var stagePropUse = document.getElementById('stagePropUse');
     var stageRole = document.getElementById('stageRole');
+    var musicDialog = document.getElementById('stageMusic');
+    var musicOpen = document.getElementById('stageMusicOpen');
+    var musicLoad = document.getElementById('stageMusicLoad');
+    var musicLink = document.getElementById('stageMusicLink');
+    var musicTitle = document.getElementById('stageMusicTitle');
+    var trackCopy = document.getElementById('stageTrackCopy');
+    var musicInfo = document.getElementById('stageMusicInfo');
+    var musicPanel = document.getElementById('stagePlayer');
+    var onWeb = /^https?:$/.test(window.location && window.location.protocol || '');
+    var entranceTracks = {
+      encore: ['阿信', '干杯', 'qX2GsMj7154', '相信音乐 · 官方 MV', '给主唱的登场曲：从独白般的起句唱到一群人的回忆。'],
+      red: ['怪兽', '九号球', 'srP_Fm7f-eg', '滚石唱片 · 官方 MV', '怪兽作曲，顺着吉他听这首歌从压低情绪走向爆发。'],
+      sunshine: ['玛莎', '诺亚方舟', 'V46K7apDziA', '相信音乐 · 官方 MV', '玛莎作曲，适合听低频与全团如何把情绪慢慢推高。'],
+      jade: ['石头', '如烟', 'uzVdsZbYibQ', '相信音乐 · 五月天与周深现场', '石头作曲，用另一种更抒情的方式让吉他手登场。'],
+      backbeat: ['冠佑', '夜访吸血鬼', '03-ge__OaIU', '相信音乐 · 官方 MV', '冠佑作曲，可以从鼓点和摇摆节奏听进这首歌。']
+    };
+    function unloadTrack() {
+      musicPanel.replaceChildren();
+      musicLoad.hidden = !onWeb;
+    }
+    function syncTrack(id) {
+      var track = entranceTracks[id];
+      musicOpen.hidden = !track;
+      if (!track) {
+        unloadTrack();
+        musicLink.removeAttribute('href');
+        if (musicDialog.open) musicDialog.close();
+        return;
+      }
+      musicTitle.textContent = track[0] + ' · 〈' + track[1] + '〉';
+      trackCopy.textContent = track[3] + '。' + track[4] + ' 这是完整歌曲，不是独奏或分轨。';
+      musicLink.setAttribute('href', 'https://www.youtube.com/watch?v=' + track[2]);
+      musicInfo.textContent = onWeb
+        ? '点击后才连接 YouTube：加载官方播放器后仍需点击播放。关闭弹窗或切出页面会停止；无法嵌入时可打开官方视频。'
+        : '当前是离线 HTML。联网后可打开官方视频；双击文件打开时不加载内嵌播放器。';
+      unloadTrack();
+    }
     var instruments = {
       encore: ['mic', '主唱大人 · 话筒'],
       red: ['red-guitar', '怪兽 · 红色电吉他'],
@@ -512,6 +579,7 @@ window.EB_RINGS={HEAD_C:114.2705,EYE_HALF:21,STAR_GOLD:"#f4c34e",EXPRESSIONS:[[[
       });
       bodyNameEl.textContent = body.name;
       setStageInstrument(body.id);
+      syncTrack(body.id);
       if (engine) engine.setBody(body.id);
       thumbs.forEach(function (preview) { preview.setBody(body.id); });
       remember();
@@ -531,6 +599,27 @@ window.EB_RINGS={HEAD_C:114.2705,EYE_HALF:21,STAR_GOLD:"#f4c34e",EXPRESSIONS:[[[
       bodyControlsEl.appendChild(card);
       GrokBall.create(icon, { body: body.id, emotion: '02', autostart: false, eyeScale: 1.16 });
       card.addEventListener('click', function () { selectBody(body); });
+    });
+
+    musicOpen.addEventListener('click', function () {
+      if (entranceTracks[currentBody.id] && !musicDialog.open) musicDialog.showModal();
+    });
+    musicLoad.addEventListener('click', function () {
+      var track = entranceTracks[currentBody.id];
+      if (!onWeb || !track || !musicDialog.open || musicPanel.firstChild) return;
+      var frame = document.createElement('iframe');
+      frame.title = track[1] + ' · YouTube 官方播放器';
+      frame.setAttribute('src', 'https://www.youtube-nocookie.com/embed/' + track[2] + '?playsinline=1');
+      frame.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+      frame.setAttribute('allow', 'encrypted-media; picture-in-picture; fullscreen');
+      frame.setAttribute('allowfullscreen', '');
+      musicPanel.replaceChildren(frame);
+      musicLoad.hidden = true;
+      frame.focus();
+    });
+    musicDialog.addEventListener('close', function () { unloadTrack(); if (!musicOpen.hidden) musicOpen.focus(); });
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden && musicDialog.open) unloadTrack();
     });
 
     stageOpen.addEventListener('click', function () {
