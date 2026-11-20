@@ -35,7 +35,7 @@ class Element {
 }
 function harness(saved, withStorage = true, reducedMotion = false, protocol = 'file:') {
   const nodes = Object.fromEntries(['bodyControls', 'previewBody', 'controls', 'previewBall', 'ball', 'previewName',
-    'previewId', 'previewDesc', 'colorMode', 'colorInput', 'sizeRange', 'stageNotes', 'stageOpen', 'stageMembers', 'stageEncore', 'stageLive', 'stageProp', 'stagePropUse', 'stageRole', 'stageMusic', 'stageMusicOpen', 'stageMusicLoad', 'stageMusicLink', 'stageMusicTitle', 'stageTrackCopy', 'stageMusicInfo', 'stagePlayer'].map(id => [id, new Element()]));
+    'previewId', 'previewDesc', 'colorMode', 'colorInput', 'sizeRange', 'stageNotes', 'stageOpen', 'stageMembers', 'stageEncore', 'stageLive', 'stageProp', 'stagePropUse', 'stageRole', 'stageSfx', 'stageMusic', 'stageMusicOpen', 'stageMusicLoad', 'stageMusicLink', 'stageMusicTitle', 'stageTrackCopy', 'stageMusicInfo', 'stagePlayer'].map(id => [id, new Element()]));
   for (const match of html.matchAll(/class="stage-member" data-body="([^"]+)"/g)) {
     const button = new Element('button');
     button.className = 'stage-member'; button.dataset.body = match[1];
@@ -330,4 +330,77 @@ for (const protocol of ['file:', 'https:']) {
     dialog.close();assert.equal(loaded.children.length,0);assert.equal(nodes.stageMusicOpen.focused,true);
   }
 }
-console.log('PASS: source and inline SDK, all 378 presets, legacy IDs/AI, live switches, selection/persistence, private mode, five instruments, encore and reduced motion, Wow mouth, balanced expressions, a genuine wink, and opt-in official tracks');
+{
+  const defaultSelection = [['grok-ball-pro.selection.v1', JSON.stringify({ body: 'encore', emotion: '25' })]];
+  const silent = harness(defaultSelection);
+  scripts.forEach(code => vm.runInContext(code, silent.sandbox));
+  assert.equal(silent.nodes.stageSfx.hidden, true, 'graceful without Web Audio');
+
+  const app = harness(defaultSelection);
+  const { nodes, win, document } = app;
+  const played = [];
+  let contexts = 0, resume;
+  win.AudioContext = class {
+    constructor() { contexts++; this.state = 'suspended'; this.sampleRate = 24000; this.currentTime = 1; }
+    resume() { return new Promise(resolve => { resume = () => { this.state = 'running'; resolve(); }; }); }
+    createGain() { return { gain: { value: 1, cancelScheduledValues() {}, setValueAtTime() {}, linearRampToValueAtTime() {} }, connect() {}, disconnect() {} }; }
+    createBuffer(_, n, rate) {
+      const samples = new Float32Array(n);
+      return { getChannelData: () => samples, duration: n / rate };
+    }
+    createBufferSource() {
+      return { start() { played.push(this); }, stop() { this.stopped = true; }, connect() {}, disconnect() {} };
+    }
+  };
+  scripts.forEach(code => vm.runInContext(code, app.sandbox));
+  const clickBall = id => nodes.bodyControls.querySelectorAll('.body-card').find(card => card.dataset.body === id).fire('click');
+  assert.equal(nodes.stageSfx.hidden, false);
+  clickBall('red');
+  assert.equal(contexts, 0, 'neither restoring a member nor choosing one while muted initializes audio');
+  nodes.stageSfx.fire('click');
+  assert.equal(nodes.stageSfx.getAttribute('aria-pressed'), 'true');
+  clickBall('classic');
+  resume();
+  await Promise.resolve();
+  assert.equal(played.length, 0, 'late resume cannot play a prior selection');
+  for (const id of ['encore', 'red', 'sunshine', 'jade', 'backbeat']) {
+    const last = played.at(-1);
+    clickBall(id);
+    if (last) assert.equal(last.stopped, true);
+    const { buffer } = played.at(-1);
+    assert.ok(buffer.duration >= 2 && buffer.duration < 3);
+    const samples = buffer.getChannelData(0);
+    let peak = 0;
+    for (const sample of samples) { assert.ok(Number.isFinite(sample)); peak = Math.max(peak, Math.abs(sample)); }
+    assert.ok(peak >= .40 && peak <= .43, 'normalized, non-silent cue');
+  }
+  assert.equal(new Set(played.map(x => x.buffer)).size, 5);
+  clickBall('backbeat');
+  assert.equal(played.at(-1).buffer, played.at(-2).buffer, 'repeat uses a cached cue');
+  const count = played.length;
+  nodes.controls.querySelectorAll('.emo-card')[0].fire('click');
+  assert.equal(played.length, count, 'changing expression does not start music');
+  nodes.stageMusicOpen.fire('click');
+  assert.equal(played.at(-1).stopped, true);
+  assert.equal(nodes.stagePlayer.children.length, 0, 'official player remains opt-in');
+  nodes.stageMusic.close();
+  nodes.stageOpen.fire('click');
+  nodes.stageMembers.children[3].fire('click');
+  assert.equal(played.length, count + 1, 'handbook member switch plays cue');
+  document.hidden = true;
+  document.fire('visibilitychange');
+  assert.equal(played.at(-1).stopped, true);
+  clickBall('encore');
+  assert.equal(played.length, count + 1, 'hidden tabs neither play nor replay');
+  document.hidden = false;
+  clickBall('encore');
+  win.fire('pagehide');
+  assert.equal(played.at(-1).stopped, true);
+  clickBall('red');
+  nodes.stageSfx.fire('click');
+  assert.equal(nodes.stageSfx.getAttribute('aria-pressed'), 'false');
+  assert.equal(played.at(-1).stopped, true);
+  clickBall('encore');
+  assert.equal(played.length, count + 3);
+}
+console.log('PASS: source and inline SDK, all 378 presets, legacy IDs/AI, live switches, selection/persistence, private mode, five instruments, encore and reduced motion, Wow mouth, balanced expressions, a genuine wink, opt-in official tracks, and original cue lifecycle');

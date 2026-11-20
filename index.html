@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Grok Ball Pro · 五月天同人舞台</title>
 <meta name="description" content="五月天非官方同人表情球：五色成员球、卜卜返场、9 款球体和 42 个表情。一个 HTML 即可离线试玩。">
 <style>
@@ -218,12 +218,14 @@
     width: clamp(58px, 36%, 110px); right: -24%; bottom: 1%;
     filter: drop-shadow(0 8px 7px #050716b8);
   }
-  .stage-music-trigger, .stage-music-go, .stage-music-load {
+  .stage-music-trigger, .stage-music-go, .stage-music-load, .stage-sfx-toggle {
     min-height: 36px; color: #eef1ff; background: #23336b; border: 1px solid #6274b5;
     border-radius: 9px; font: inherit; font-size: 12px; cursor: pointer; padding: 6px 11px;
   }
-  .stage-music-trigger:hover, .stage-music-go:hover, .stage-music-load:hover { background: #344988; }
-  .stage-music-trigger:focus-visible, .stage-music-go:focus-visible, .stage-music-load:focus-visible {
+  .stage-music-trigger:hover, .stage-music-go:hover, .stage-music-load:hover, .stage-sfx-toggle:hover { background: #344988; }
+  .stage-sfx-toggle[aria-pressed="true"] { background: #324d71; border-color: #a3ddff; }
+  .stage-music-trigger:focus-visible, .stage-music-go:focus-visible, .stage-music-load:focus-visible,
+  .stage-sfx-toggle:focus-visible {
     outline: 2px solid #bdc9ff; outline-offset: 3px;
   }
   .stage-music { width: min(568px, calc(100% - 24px)); }
@@ -289,6 +291,72 @@
     .preview-ball { width: min(var(--ball-size, 210px), 62vw); }
     .stage-members { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .stage-prop { width: clamp(54px, 34%, 82px); right: -18%; }
+  }
+  /* Touch layout: page scrolling and a bounded, reachable stage on small screens. */
+  @media (max-width: 720px), (max-width: 1024px) and (max-height: 540px) {
+    html { height: auto; }
+    body { height: auto; min-height: 100vh; min-height: 100dvh; display: block; overflow: auto; }
+    .topbar, .panel { margin-inline: auto; }
+    .topbar {
+      gap: 8px; padding-block-start: max(10px, env(safe-area-inset-top));
+      padding-inline-start: max(12px, env(safe-area-inset-left));
+      padding-inline-end: max(12px, env(safe-area-inset-right));
+      padding-block-end: 10px;
+    }
+    .brand { min-width: 0; line-height: 1.15; }
+    .top-actions { flex: none; }
+    .stage-trigger, .stage-close, .github-link { min-height: 44px; min-width: 44px; }
+    .github-link { max-width: 44px; justify-content: center; padding: 0; }
+    .github-link span { display: none; }
+    .panel {
+      padding-inline-start: max(10px, env(safe-area-inset-left));
+      padding-inline-end: max(10px, env(safe-area-inset-right));
+      padding-block-end: calc(70px + env(safe-area-inset-bottom));
+    }
+    .controls { min-width: 0; }
+    .emo-scroll { flex: 0 1 auto; max-height: none; overflow: visible; padding: 0; margin: 0; }
+    .emo-card { min-height: 62px; gap: 4px; }
+    .emo-name { white-space: normal; text-align: center; line-height: 1.2; }
+    .control-row { flex-wrap: wrap; }
+    .control-row select, .control-row input[type=color], .control-row input[type=range] { min-height: 44px; }
+    .control-row input[type=color] { width: 44px; }
+    .preview { min-width: 0; min-height: 0; padding: 16px 12px; }
+    .stage-identity { width: 100%; min-width: 0; gap: 6px; }
+    .stage-identity:has(> button) { align-items: stretch; }
+    .stage-identity > :is(.stage-encore, .stage-music-trigger, .stage-sfx-toggle) {
+      min-height: 44px; min-width: 44px; max-width: 100%;
+      padding-inline: 9px; line-height: 1.22; white-space: normal; overflow-wrap: anywhere;
+    }
+    .stage-notes {
+      max-width: calc(100% - max(8px, env(safe-area-inset-left)) - max(8px, env(safe-area-inset-right)));
+      max-height: calc(100dvh - max(8px, env(safe-area-inset-top)) - max(8px, env(safe-area-inset-bottom)));
+      overscroll-behavior: contain;
+    }
+    .stage-notes-head h2 { font-size: clamp(17px, 5vw, 22px); overflow-wrap: anywhere; }
+    .stage-close { flex: none; }
+    .stage-music-go, .stage-music-load { min-height: 44px; }
+    .ball {
+      right: max(10px, env(safe-area-inset-right)); bottom: max(10px, env(safe-area-inset-bottom));
+      width: 46px; height: 46px;
+    }
+  }
+  @media (max-width: 720px) {
+    .panel { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+    .controls { padding: 14px; }
+    .preview-ball { width: min(var(--ball-size, 240px), 66vw, max(140px, 55svh)); }
+    .stage-tracks a { flex-wrap: wrap; gap: 3px 10px; }
+    .stage-tracks small { text-align: start; }
+  }
+  @media (max-width: 370px) {
+    .brand { font-size: 14px; }
+    .emo-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+    .stage-identity > :is(.stage-encore, .stage-music-trigger, .stage-sfx-toggle) { padding-inline: 7px; }
+  }
+  @media (min-width: 600px) and (max-width: 1024px) and (max-height: 540px) and (orientation: landscape) {
+    .panel { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 10px; }
+    .preview { grid-row: 1; grid-column: 1; }
+    .controls { grid-row: 1; grid-column: 2; padding: 14px; }
+    .preview-ball { width: min(var(--ball-size, 240px), 35vw, max(132px, 50svh)); }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
@@ -364,6 +432,7 @@
       <p class="preview-desc" id="previewDesc"></p>
       <div class="stage-identity">
         <button class="stage-encore" id="stageEncore" type="button">✦ 安可一下</button>
+        <button class="stage-sfx-toggle" id="stageSfx" type="button" aria-pressed="false" hidden>♫ 登场音效</button>
         <button class="stage-music-trigger" id="stageMusicOpen" type="button" aria-haspopup="dialog" hidden>♪ 登场曲</button>
       </div>
       <span class="stage-visually-hidden" id="stageLive" role="status"></span>
@@ -447,7 +516,7 @@
       <li><a href="https://www.youtube.com/watch?v=EZxVmhM6UpE" target="_blank" rel="noopener noreferrer"><span>02 · 突然好想你 ↗</span><small>相信音乐 · 官方现场</small></a></li>
       <li><a href="https://www.youtube.com/watch?v=LQ2s10P5i08" target="_blank" rel="noopener noreferrer"><span>03 · 转眼 ↗</span><small>相信音乐 · 官方 MV</small></a></li>
     </ol>
-    <p class="stage-credit"><a href="https://bin-music.com/artist/MAYDAY" target="_blank" rel="noopener noreferrer">相信音乐 · 五月天官方艺人页 ↗</a><br>非官方同人作品，与五月天、相信音乐、STAYREAL 或 xAI 无隶属或代言关系。不打包音乐、官方图片或商标图形；登场曲只通过用户主动选择的官方服务播放。</p>
+    <p class="stage-credit"><a href="https://bin-music.com/artist/MAYDAY" target="_blank" rel="noopener noreferrer">相信音乐 · 五月天官方艺人页 ↗</a><br>非官方同人作品，与五月天、相信音乐、STAYREAL 或 xAI 无隶属或代言关系。登场音效为本页原创合成，不含歌曲录音；五月天歌曲只通过用户主动选择的官方服务播放。</p>
   </dialog>
 
   <dialog class="stage-notes stage-music" id="stageMusic" aria-labelledby="stageMusicTitle">
@@ -512,6 +581,142 @@ window.EB_RINGS={HEAD_C:114.2705,EYE_HALF:21,STAR_GOLD:"#f4c34e",EXPRESSIONS:[[[
       jade: ['石头', '如烟', 'uzVdsZbYibQ', '相信音乐 · 五月天与周深现场', '石头作曲，用另一种更抒情的方式让吉他手登场。'],
       backbeat: ['冠佑', '夜访吸血鬼', '03-ge__OaIU', '相信音乐 · 官方 MV', '冠佑作曲，可以从鼓点和摇摆节奏听进这首歌。']
     };
+    // Original, short instrument cues. Generated locally; no network or music samples.
+    var cues = {
+      encore: { duration: 2.24, notes: [[0.19, 62, .39], [.59, 67, .37], [1.00, 65, .33], [1.38, 72, .65]] },
+      red: { duration: 2.26, notes: [[.02, 45, .23], [.27, 45, .12], [.45, 48, .28], [.74, 50, .2], [.98, 43, .24], [1.27, 45, .82]] },
+      sunshine: { duration: 2.23, notes: [[.03, 43, .32], [.43, 50, .19], [.63, 46, .18], [.86, 48, .3], [1.24, 41, .22], [1.52, 43, .55]] },
+      jade: { duration: 2.58, notes: [[.03, 57, .7], [.26, 64, .62], [.51, 67, .68], [.77, 71, .66], [1.05, 69, .72], [1.30, 64, 1.04]] },
+      backbeat: { duration: 2.31, notes: [[.02, 0, .29], [.03, 2, .12], [.30, 2, .10], [.57, 1, .22], [.83, 2, .10], [1.08, 0, .28], [1.32, 0, .25], [1.57, 1, .25], [1.58, 2, .43], [1.86, 3, .34]] }
+    };
+    var AudioContext = window.AudioContext || window.webkitAudioContext;
+    var sfxToggle = document.getElementById('stageSfx');
+    var cueAudio = null;
+    var cueSource = null;
+    var cueBuffers = Object.create(null);
+    var cueRequest = 0;
+    var sfxEnabled = false;
+    sfxToggle.hidden = !AudioContext;
+
+    function stopCue() {
+      cueRequest++;
+      if (!cueSource) return;
+      var previous = cueSource;
+      cueSource = null;
+      var now = cueAudio.currentTime;
+      previous.gain.gain.cancelScheduledValues(now);
+      previous.gain.gain.setValueAtTime(previous.gain.gain.value, now);
+      previous.gain.gain.linearRampToValueAtTime(0, now + .018);
+      previous.source.stop(now + .02);
+    }
+
+    function buildCue(key) {
+      var cue = cues[key];
+      var rate = cueAudio.sampleRate;
+      var buffer = cueAudio.createBuffer(1, Math.ceil(cue.duration * rate), rate);
+      var wave = buffer.getChannelData(0);
+      var noiseSeed = 47;
+      var tau = Math.PI * 2;
+      function noise() {
+        noiseSeed = (Math.imul(noiseSeed, 1664525) + 1013904223) >>> 0;
+        return noiseSeed / 2147483648 - 1;
+      }
+      cue.notes.forEach(function (note) {
+        var start = Math.round(note[0] * rate);
+        var end = Math.min(wave.length, start + Math.round(note[2] * rate));
+        var f = 440 * Math.pow(2, (note[1] - 69) / 12);
+        var previousNoise = 0;
+        for (var i = start; i < end; i++) {
+          var t = (i - start) / rate;
+          var phase = tau * f * t;
+          var env = Math.min(1, t / .007, (end - i) / (rate * .052));
+          var y;
+          if (key === 'backbeat') {
+            var n = noise(), upper = n - previousNoise;
+            previousNoise = n;
+            if (note[1] === 0) y = .86 * Math.sin(tau * (52 * t + 3.3 * (1 - Math.exp(-t * 32)))) * Math.exp(-t * 17);
+            else if (note[1] === 1) y = (.55 * n + .44 * Math.sin(tau * 176 * t) * Math.exp(-t * 27)) * Math.exp(-t * 15);
+            else if (note[1] === 2) y = .26 * upper * Math.exp(-t * 19);
+            else y = .64 * Math.sin(tau * (93 * t + 2.2 * (1 - Math.exp(-t * 20)))) * Math.exp(-t * 13);
+          } else if (key === 'encore') {
+            // A stage mic tap followed by a stylized, synthesized “ooh”, not a recorded voice.
+            var vowel = Math.sin(phase + .46 * Math.sin(tau * 5.4 * t)) +
+              .48 * Math.sin(phase * 2) + .19 * Math.sin(phase * 3) + .10 * Math.sin(phase * 5);
+            y = .45 * vowel * (.67 + .33 * Math.exp(-t * 3)) * Math.min(1, t * 23);
+          } else if (key === 'red') {
+            var crunch = Math.sin(phase) + .46 * Math.sin(1.503 * phase) + .39 * Math.sin(2 * phase) +
+              (.25 * Math.sin(3 * phase) + .14 * Math.sin(5 * phase)) * Math.exp(-t * 5);
+            y = .76 * Math.tanh(crunch * 2.0) * Math.exp(-t * 4.4);
+          } else if (key === 'sunshine') {
+            y = (.83 * Math.sin(phase) + .39 * Math.sin(2 * phase) * Math.exp(-t * 8) +
+              .14 * Math.sin(3 * phase) * Math.exp(-t * 12)) * Math.exp(-t * 5.4);
+          } else {
+            y = (.69 * Math.sin(phase) + .31 * Math.sin(2 * phase + .11) * Math.exp(-t * 4) +
+              .15 * Math.sin(3 * phase) * Math.exp(-t * 8) + .08 * Math.sin(4.01 * phase)) * Math.exp(-t * 4);
+          }
+          wave[i] += env * y;
+        }
+      });
+      if (key === 'encore') {
+        for (var j = 0; j < rate * .15; j++) {
+          var tap = j / rate;
+          wave[j] += Math.min(1, tap * 420) * Math.exp(-tap * 44) * (.5 * Math.sin(tau * 168 * tap) + .23 * noise());
+        }
+      }
+      // A small, non-feedback stage reflection. Normalize peaks before output.
+      var delay = Math.round(rate * (key === 'jade' ? .151 : .083));
+      var peak = .01;
+      for (var k = wave.length - 1; k >= 0; k--) {
+        if (k >= delay) wave[k] += wave[k - delay] * (key === 'jade' ? .28 : .13);
+        wave[k] *= Math.min(1, (wave.length - k - 1) / (rate * .07));
+        peak = Math.max(peak, Math.abs(wave[k]));
+      }
+      for (var l = 0; l < wave.length; l++) wave[l] *= .42 / peak;
+      return buffer;
+    }
+
+    function cueUnavailable() {
+      stageLive.textContent = '登场音效未能播放。可以再点一次成员球试试。';
+    }
+
+    function playCue(key) {
+      stopCue();
+      if (!sfxEnabled || !Object.prototype.hasOwnProperty.call(cues, key) || document.hidden) return;
+      var ticket = cueRequest;
+      function start() {
+        if (ticket !== cueRequest || !sfxEnabled || document.hidden) return;
+        if (cueAudio.state !== 'running') { cueUnavailable(); return; }
+        try {
+          var source = cueAudio.createBufferSource();
+          var gain = cueAudio.createGain();
+          source.buffer = cueBuffers[key] || (cueBuffers[key] = buildCue(key));
+          source.connect(gain);
+          gain.connect(cueAudio.destination);
+          var active = { source: source, gain: gain };
+          source.onended = function () {
+            source.disconnect();
+            gain.disconnect();
+            if (cueSource === active) cueSource = null;
+          };
+          source.start();
+          cueSource = active;
+        } catch (_) { cueUnavailable(); }
+      }
+      try {
+        cueAudio = cueAudio || new AudioContext();
+        if (cueAudio.state === 'running') start();
+        else cueAudio.resume().then(start, function () { if (ticket === cueRequest) cueUnavailable(); });
+      } catch (_) { cueUnavailable(); }
+    }
+
+    sfxToggle.addEventListener('click', function () {
+      sfxEnabled = !sfxEnabled;
+      sfxToggle.setAttribute('aria-pressed', String(sfxEnabled));
+      stageLive.textContent = sfxEnabled ? '登场音效已开启。点击成员球试听。' : '登场音效已关闭。';
+      if (!sfxEnabled) stopCue();
+      else playCue(currentBody.id);
+    });
+
     function unloadTrack() {
       musicPanel.replaceChildren();
       musicLoad.hidden = !onWeb;
@@ -598,10 +803,11 @@ window.EB_RINGS={HEAD_C:114.2705,EYE_HALF:21,STAR_GOLD:"#f4c34e",EXPRESSIONS:[[[
       card.append(icon, txt);
       bodyControlsEl.appendChild(card);
       GrokBall.create(icon, { body: body.id, emotion: '02', autostart: false, eyeScale: 1.16 });
-      card.addEventListener('click', function () { selectBody(body); });
+      card.addEventListener('click', function () { selectBody(body); playCue(body.id); });
     });
 
     musicOpen.addEventListener('click', function () {
+      stopCue();
       if (entranceTracks[currentBody.id] && !musicDialog.open) musicDialog.showModal();
     });
     musicLoad.addEventListener('click', function () {
@@ -619,8 +825,12 @@ window.EB_RINGS={HEAD_C:114.2705,EYE_HALF:21,STAR_GOLD:"#f4c34e",EXPRESSIONS:[[[
     });
     musicDialog.addEventListener('close', function () { unloadTrack(); if (!musicOpen.hidden) musicOpen.focus(); });
     document.addEventListener('visibilitychange', function () {
-      if (document.hidden && musicDialog.open) unloadTrack();
+      if (!document.hidden) return;
+      stopCue();
+      if (musicDialog.open) unloadTrack();
     });
+
+    window.addEventListener('pagehide', stopCue);
 
     stageOpen.addEventListener('click', function () {
       if (!stageNotes.open) stageNotes.showModal();
@@ -631,6 +841,7 @@ window.EB_RINGS={HEAD_C:114.2705,EYE_HALF:21,STAR_GOLD:"#f4c34e",EXPRESSIONS:[[[
         var body = BODIES.find(function (item) { return item.id === card.dataset.body; });
         if (!body) return;
         selectBody(body);
+        playCue(body.id);
         stageNotes.close();
       });
     });
